@@ -14,7 +14,7 @@ class ChatListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgWhite,
+      backgroundColor: AppColors.bgTinted,
       appBar: AppBar(
         title: const Text('채팅'),
         actions: [

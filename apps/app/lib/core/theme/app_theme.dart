@@ -9,13 +9,13 @@ abstract class AppTheme {
           primary: AppColors.primary,
           onPrimary: AppColors.textOnPrimary,
           secondary: AppColors.primaryHover,
-          surface: AppColors.surfaceDefault,
+          surface: AppColors.surfaceDefault,        // bgTinted — 보라 틴트 화이트
           surfaceContainerHighest: AppColors.surfaceSubtle,
           error: AppColors.error,
         ),
         scaffoldBackgroundColor: AppColors.bgDefault,
         appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.bgWhite,
+          backgroundColor: AppColors.bgTinted,
           foregroundColor: AppColors.textPrimary,
           elevation: 0,
           scrolledUnderElevation: 1,
@@ -27,7 +27,7 @@ abstract class AppTheme {
           ),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.bgWhite,
+          backgroundColor: AppColors.bgTinted,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textDisabled,
           type: BottomNavigationBarType.fixed,
@@ -100,7 +100,7 @@ abstract class AppTheme {
           ),
         ),
         listTileTheme: const ListTileThemeData(
-          tileColor: AppColors.bgWhite,
+          tileColor: AppColors.bgTinted,
           iconColor: AppColors.textSecondary,
           titleTextStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
           subtitleTextStyle: TextStyle(fontSize: 12, color: AppColors.textSecondary),

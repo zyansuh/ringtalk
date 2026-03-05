@@ -37,7 +37,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           // 프로필 카드
           Container(
-            color: AppColors.bgWhite,
+            color: AppColors.bgTinted,
             padding: const EdgeInsets.all(16),
             child: const Row(
               children: [
@@ -116,7 +116,7 @@ class _Section extends StatelessWidget {
           ),
         ),
         Container(
-          color: AppColors.bgWhite,
+          color: AppColors.bgTinted,
           child: Column(
             children: items.expand((item) => [
               ListTile(

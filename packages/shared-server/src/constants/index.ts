@@ -22,54 +22,62 @@ export const MESSAGE_PAGE_SIZE = 50;
 export const MAX_MESSAGE_LENGTH = 5000;
 export const MAX_FILE_SIZE_MB = 100;
 
-// 링톡 컬러 시스템
-// 기준: Primary #B350CC (HSL 289°) — 모든 색상이 보라 계열 세계관으로 통일
+// ══════════════════════════════════════════════════════════════
+//  링톡 컬러 시스템 — 완전 라벤더·보라 유니버스
+//  기준축: HSL 289° (Primary #B350CC)
+//  원칙  : 파일 안 모든 색상이 보라(289°) 계열 DNA 보유
+//          순수 흰색·무채색·원색 완전 배제
+// ══════════════════════════════════════════════════════════════
 export const Colors = {
-  // ─── Primary ────────────────────────────────────────────────────────────────
-  primary:        '#b350cc', // HSL 289 61% 56% — CTA, 활성 탭, 버튼
-  primaryHover:   '#bd66d2', // HSL 289 51% 61% — hover/ripple
-  primaryDark:    '#9a3db0', // HSL 289 48% 46% — pressed
-  primarySurface: '#f3e0fa', // HSL 289 70% 93% — 배지 배경, 선택 영역
+  // ─── Primary (HSL 289°) ──────────────────────────────────────
+  primary:        '#b350cc', // H:289 S:61% L:56% — 브랜드, CTA
+  primaryHover:   '#bd66d2', // H:289 S:51% L:61% — hover·ripple
+  primaryDark:    '#9a3db0', // H:289 S:48% L:46% — pressed
+  primaryDeep:    '#7b2d9c', // H:289 S:55% L:39% — 강조 포인트
+  primarySurface: '#f3e0fa', // H:289 S:70% L:93% — 뱃지·선택 배경
 
-  // ─── Background ─────────────────────────────────────────────────────────────
-  bgDefault: '#f6e9f9', // HSL 289 60% 95% — 기본 스캐폴드 배경
-  bgDeep:    '#ecd3f2', // HSL 289 50% 89% — 섹션 구분 / 그라데이션 끝
-  bgWhite:   '#ffffff', // 카드, 모달, 입력 배경
+  // ─── Background (라벤더 스케일) ───────────────────────────────
+  bgDefault: '#f6e9f9', // H:289 S:60% L:95% — 기본 스캐폴드
+  bgDeep:    '#ecd3f2', // H:289 S:50% L:89% — 섹션 구분·그라데이션 끝
+  bgTinted:  '#fef8ff', // H:289 S:100% L:99.5% — 보라 틴트 "화이트" (순수 흰색 대체)
 
-  // ─── Surface / Container ────────────────────────────────────────────────────
-  surfaceDefault: '#ffffff',  // 카드 / 리스트 아이템
-  surfaceSubtle:  '#f8f0fa',  // HSL 289 40% 97% — 입력 필드, 태그 배경
-  surfaceOverlay: '#ede5f2',  // HSL 289 30% 93% — 오버레이, hover 상태
+  // ─── Surface (보라 틴트 화이트) ──────────────────────────────
+  surfaceDefault: '#fef8ff', // = bgTinted — 카드·리스트
+  surfaceSubtle:  '#f4ebf8', // H:289 S:45% L:95.5% — 입력 필드·태그
+  surfaceOverlay: '#e8d4f0', // H:289 S:40% L:89% — hover·오버레이
 
-  // ─── Text ───────────────────────────────────────────────────────────────────
-  textPrimary:   '#1a0a1e', // HSL 289 47%  8% — 헤더, 중요 텍스트
-  textSecondary: '#6b5572', // HSL 289 15% 37% — 본문, 라벨
-  textDisabled:  '#b8a8be', // HSL 289 13% 70% — 플레이스홀더, 비활성
-  textOnPrimary: '#ffffff', // Primary 위 텍스트
+  // ─── Text (보라-차콜 스케일) ─────────────────────────────────
+  textPrimary:   '#1c0a24', // H:289 S:60% L:9%  — 헤더·중요 텍스트
+  textSecondary: '#664d78', // H:289 S:23% L:39% — 본문·라벨
+  textDisabled:  '#b09abe', // H:289 S:18% L:68% — 플레이스홀더·비활성
+  textOnPrimary: '#ffffff',
 
-  // ─── Border / Divider ───────────────────────────────────────────────────────
-  borderDefault: '#d4b8dc', // HSL 289 25% 79%
-  borderSubtle:  '#ede5f2', // HSL 289 30% 93%
+  // ─── Border (보라 스케일) ─────────────────────────────────────
+  borderDefault: '#caaad8', // H:289 S:30% L:75%
+  borderSubtle:  '#e4d0ee', // H:289 S:35% L:88%
 
-  // ─── Chat Bubble ────────────────────────────────────────────────────────────
-  bubbleMine:       '#b350cc', // 내 말풍선 = Primary
+  // ─── Chat Bubble ──────────────────────────────────────────────
+  bubbleMine:       '#b350cc', // = primary
   bubbleMineText:   '#ffffff',
-  bubbleOther:      '#ffffff', // 상대 말풍선
-  bubbleOtherText:  '#1a0a1e',
-  bubbleSystem:     '#ede0f2', // 시스템 메시지 배경
-  bubbleSystemText: '#6b5572',
+  bubbleOther:      '#fef8ff', // = bgTinted (보라 틴트 화이트)
+  bubbleOtherText:  '#1c0a24',
+  bubbleSystem:     '#ede0f2',
+  bubbleSystemText: '#664d78',
 
-  // ─── Semantic ───────────────────────────────────────────────────────────────
-  // 의미 전달 유지 + 보라 계열로 보정하여 팔레트 통일
-  error:   '#d03060', // crimson rose  — 오류, 위험 (빨강이지만 보라 색조 혼합)
-  warning: '#c07d10', // amber brown   — 경고, 주의 (주황이지만 채도 낮추고 따뜻하게)
-  success: '#2d9b68', // teal green    — 성공, 완료 (초록이지만 차갑게 기울여 보라와 조화)
-  info:    '#7c4dba', // purple violet — 정보, 안내 (브랜드 계열에서 직접 파생)
+  // ─── Semantic (기능 색상 — 보라 유니버스 유지) ─────────────────
+  //  Error   H:328° 마젠타 크림슨 — 보라+핑크 = 위험하지만 보라 계열
+  //  Warning H:292° 다크 오키드   — 보라보다 어둡고 채도 낮아 '주의'
+  //  Success H:205° 스틸 블루     — 보라의 쿨 보색, '완료·안정'
+  //  Info    H:270° 인디고 퍼플   — 브랜드 직접 파생
+  error:   '#c2186a', // H:328 S:78% L:43% — 마젠타 로즈
+  warning: '#9c4daa', // H:292 S:38% L:49% — 다크 오키드
+  success: '#2680a8', // H:205 S:63% L:40% — 스틸 블루
+  info:    '#7c4dba', // H:270 S:44% L:52% — 인디고 바이올렛
 
-  // ─── Presence ───────────────────────────────────────────────────────────────
-  online:  '#2d9b68', // = success
-  offline: '#9e8aab', // HSL 289 13% 60% — 퍼플-그레이
-  away:    '#c07d10', // = warning
+  // ─── Presence ─────────────────────────────────────────────────
+  online:  '#2680a8', // = success
+  offline: '#9e8aab', // H:289 S:13% L:60% — 퍼플-그레이
+  away:    '#9c4daa', // = warning
 } as const;
 
 // API 엔드포인트
