@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ErrorCode } from '@ringtalk/shared-server';
 
 @Injectable()
@@ -8,12 +9,14 @@ export class UsersService {
 
   async getMe(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new NotFoundException({ code: ErrorCode.USER_NOT_FOUND, message: '유저를 찾을 수 없습니다.' });
+    if (!user) {
+      throw new NotFoundException({ code: ErrorCode.USER_NOT_FOUND, message: '유저를 찾을 수 없습니다.' });
+    }
     const { phoneHash: _, ...safe } = user;
     return safe;
   }
 
-  async updateProfile(userId: string, dto: { displayName?: string; statusMessage?: string }) {
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: dto,
@@ -23,11 +26,10 @@ export class UsersService {
   }
 
   async searchByPhoneHash(phoneHashes: string[]) {
-    const users = await this.prisma.user.findMany({
+    return this.prisma.user.findMany({
       where: { phoneHash: { in: phoneHashes } },
       select: { id: true, displayName: true, profileImageUrl: true, statusMessage: true },
     });
-    return users;
   }
 
   async blockUser(userId: string, targetId: string) {

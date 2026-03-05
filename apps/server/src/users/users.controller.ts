@@ -1,17 +1,9 @@
-import { Controller, Get, Patch, Body, Param, Post, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Param, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { SearchByPhoneDto } from './dto/search-by-phone.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser, JwtPayload } from '../common/decorators/current-user.decorator';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
-
-class UpdateProfileDto {
-  @IsString() @MaxLength(20) @IsOptional() displayName?: string;
-  @IsString() @MaxLength(60) @IsOptional() statusMessage?: string;
-}
-
-class SearchByPhoneDto {
-  phoneHashes!: string[];
-}
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)

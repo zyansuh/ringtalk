@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/models/models.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/utils.dart';
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/models/models.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phone;
@@ -48,8 +49,22 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   String _formatTime(int sec) => formatOtpTimer(sec);
-
   String _maskPhone(String phone) => maskPhoneNumber(phone);
+
+  String get _currentPlatform {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+        return 'ios';
+      case TargetPlatform.android:
+        return 'android';
+      case TargetPlatform.macOS:
+        return 'macos';
+      case TargetPlatform.windows:
+        return 'windows';
+      default:
+        return 'web';
+    }
+  }
 
   void _onDigitChange(String value, int index) {
     final digit = value.replaceAll(RegExp(r'\D'), '');
@@ -91,7 +106,7 @@ class _OtpScreenState extends State<OtpScreen> {
           otp: otp,
           deviceId: widget.deviceId,
           deviceName: 'Flutter Device',
-          platform: 'android',
+          platform: _currentPlatform,
         ).toJson(),
       );
 
@@ -127,7 +142,7 @@ class _OtpScreenState extends State<OtpScreen> {
         data: RequestOtpRequest(
           phoneNumber: widget.phone,
           deviceId: widget.deviceId,
-          platform: 'android',
+          platform: _currentPlatform,
         ).toJson(),
       );
       setState(() {

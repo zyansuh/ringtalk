@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Req,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-  Delete,
-  Param,
-  Get,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, Delete, Param, Req, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';

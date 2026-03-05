@@ -3,17 +3,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { JwtPayload } from '../../common/decorators/current-user.decorator';
 import { ErrorCode } from '@ringtalk/shared-server';
-
-export interface JwtPayload {
-  sub: string;
-  deviceId: string;
-}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    config: ConfigService, // 인스턴스 저장 불필요, super()에서만 사용
+    config: ConfigService,
     private readonly prisma: PrismaService,
   ) {
     super({

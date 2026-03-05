@@ -1,5 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+// JwtPayload의 단일 출처 - jwt.strategy.ts가 이 타입을 import
 export interface JwtPayload {
   sub: string; // userId
   deviceId: string;

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../constants/app_constants.dart';
 import '../storage/auth_storage.dart';
 
 const _baseUrl = String.fromEnvironment(
@@ -36,7 +37,7 @@ Dio _buildDio() {
         }
         try {
           final res = await Dio().post(
-            '$_baseUrl/auth/refresh',
+            '$_baseUrl${ApiEndpoints.refresh}',
             data: {'refreshToken': refreshToken, 'deviceId': deviceId},
           );
           final data = res.data['data'];
