@@ -84,7 +84,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: AppColors.bgDefault,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -8,12 +8,12 @@ abstract class AppTheme {
           seedColor: AppColors.primary,
           primary: AppColors.primary,
           onPrimary: AppColors.textOnPrimary,
-          secondary: AppColors.primaryLight,
+          secondary: AppColors.primaryHover,
           surface: AppColors.surfaceDefault,
           surfaceContainerHighest: AppColors.surfaceSubtle,
           error: AppColors.error,
         ),
-        scaffoldBackgroundColor: AppColors.bgLight,
+        scaffoldBackgroundColor: AppColors.bgDefault,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.bgWhite,
           foregroundColor: AppColors.textPrimary,
@@ -68,8 +68,23 @@ abstract class AppTheme {
             shadowColor: AppColors.primary.withValues(alpha: 0.35),
           ),
         ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primary,
+            side: const BorderSide(color: AppColors.primary, width: 1.5),
+            shape: const StadiumBorder(),
+            textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+        ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: AppColors.primarySurface,
+          selectedColor: AppColors.primary,
+          labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          side: const BorderSide(color: AppColors.borderDefault),
         ),
         dividerTheme: const DividerThemeData(
           color: AppColors.borderSubtle,
@@ -84,21 +99,21 @@ abstract class AppTheme {
             side: const BorderSide(color: AppColors.borderSubtle),
           ),
         ),
+        listTileTheme: const ListTileThemeData(
+          tileColor: AppColors.bgWhite,
+          iconColor: AppColors.textSecondary,
+          titleTextStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+          subtitleTextStyle: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
         textTheme: const TextTheme(
-          displayLarge: TextStyle(
-              fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-          headlineMedium: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-          titleLarge: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-          bodyLarge: TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
-          bodyMedium: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
-          bodySmall: TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
-          labelLarge: TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          displayLarge:  TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+          headlineMedium: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          titleLarge:    TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          bodyLarge:     TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
+          bodyMedium:    TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
+          bodySmall:     TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
+          labelLarge:    TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          labelSmall:    TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textSecondary),
         ),
       );
 }

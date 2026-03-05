@@ -163,7 +163,7 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: AppColors.bgDefault,
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, leading: const BackButton()),
       body: SafeArea(
         child: Padding(

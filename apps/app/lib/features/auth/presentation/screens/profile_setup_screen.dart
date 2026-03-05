@@ -26,7 +26,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     final hasName = _nameCtrl.text.trim().isNotEmpty;
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: AppColors.bgDefault,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),

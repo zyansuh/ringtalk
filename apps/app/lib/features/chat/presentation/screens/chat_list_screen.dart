@@ -46,7 +46,7 @@ class _RoomTile extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: CircleAvatar(
         radius: 26,
-        backgroundColor: AppColors.primaryLight,
+        backgroundColor: AppColors.primaryHover,
         child: Text(
           room.name[0],
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 20),
