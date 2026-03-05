@@ -1,6 +1,6 @@
 import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ErrorCode } from '@ringtalk/shared';
+import { ErrorCode } from '@ringtalk/shared-server';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

@@ -1,0 +1,83 @@
+/// 링톡 앱 전역 상수
+
+abstract class AppConstants {
+  static const appName = '링톡';
+  static const appVersion = '0.1.0';
+
+  // OTP
+  static const otpLength = 6;
+  static const otpExpiresInSeconds = 180; // 3분
+  static const otpMaxAttempts = 5;
+  static const otpRateLimitWindowSeconds = 600; // 10분
+  static const otpRateLimitMax = 3;
+
+  // 토큰
+  static const accessTokenExpiresIn = '15m';
+  static const refreshTokenExpiresIn = '30d';
+
+  // 페이지네이션
+  static const defaultPageSize = 30;
+  static const maxPageSize = 100;
+  static const messagePageSize = 50;
+
+  // 메시지
+  static const maxMessageLength = 5000;
+  static const maxFileSizeMb = 100;
+}
+
+/// API 엔드포인트
+abstract class ApiEndpoints {
+  // 인증
+  static const requestOtp = '/auth/request-otp';
+  static const verifyOtp = '/auth/verify-otp';
+  static const refresh = '/auth/refresh';
+  static const logout = '/auth/logout';
+  static const sessions = '/auth/sessions';
+
+  // 유저
+  static const me = '/users/me';
+  static String userProfile(String id) => '/users/$id';
+  static const friends = '/users/me/friends';
+  static const addFriend = '/users/me/friends';
+  static String blockUser(String id) => '/users/$id/block';
+  static const searchByPhone = '/users/search';
+
+  // 채팅방
+  static const rooms = '/rooms';
+  static String roomDetail(String id) => '/rooms/$id';
+  static String roomMessages(String id) => '/rooms/$id/messages';
+  static String sendMessage(String id) => '/rooms/$id/messages';
+  static String readMessage(String id) => '/rooms/$id/read';
+
+  // 미디어
+  static const mediaUpload = '/media/upload';
+  static const presignedUrl = '/media/presigned-url';
+}
+
+/// WebSocket 이벤트 이름
+abstract class WsEvents {
+  // 연결
+  static const connect = 'connect';
+  static const disconnect = 'disconnect';
+  static const authenticate = 'authenticate';
+  static const authenticated = 'authenticated';
+
+  // 메시지
+  static const messageSend = 'message:send';
+  static const messageNew = 'message:new';
+  static const messageStatus = 'message:status';
+  static const messageDelete = 'message:delete';
+  static const messageDeleted = 'message:deleted';
+
+  // 방
+  static const roomJoin = 'room:join';
+  static const roomLeave = 'room:leave';
+  static const roomUpdated = 'room:updated';
+
+  // 유저 상태
+  static const userTypingStart = 'user:typing:start';
+  static const userTypingStop = 'user:typing:stop';
+  static const userTyping = 'user:typing';
+  static const userPresence = 'user:presence';
+  static const userRead = 'user:read';
+}

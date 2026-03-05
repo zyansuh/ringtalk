@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { ErrorCode } from '@ringtalk/shared';
+import { ErrorCode } from '@ringtalk/shared-server';
 
 export interface JwtPayload {
   sub: string;

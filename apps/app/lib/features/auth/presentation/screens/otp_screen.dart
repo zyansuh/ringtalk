@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/utils.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/models/models.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phone;
@@ -17,8 +20,8 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  static const _otpLength = 6;
-  static const _expireSec = 180;
+  static const _otpLength = AppConstants.otpLength;
+  static const _expireSec = AppConstants.otpExpiresInSeconds;
 
   final _controllers = List.generate(_otpLength, (_) => TextEditingController());
   final _focusNodes = List.generate(_otpLength, (_) => FocusNode());
@@ -44,13 +47,9 @@ class _OtpScreenState extends State<OtpScreen> {
     });
   }
 
-  String _formatTime(int sec) =>
-      '${(sec ~/ 60).toString().padLeft(2, '0')}:${(sec % 60).toString().padLeft(2, '0')}';
+  String _formatTime(int sec) => formatOtpTimer(sec);
 
-  String _maskPhone(String phone) {
-    if (phone.length < 8) return '***';
-    return '${phone.substring(0, 3)} ***-****-${phone.substring(phone.length - 4)}';
-  }
+  String _maskPhone(String phone) => maskPhoneNumber(phone);
 
   void _onDigitChange(String value, int index) {
     final digit = value.replaceAll(RegExp(r'\D'), '');
@@ -79,22 +78,25 @@ class _OtpScreenState extends State<OtpScreen> {
   Future<void> _verify(String otp) async {
     setState(() { _isLoading = true; _error = null; });
     try {
-      final res = await apiClient.post('/auth/verify-otp', data: {
-        'phoneNumber': widget.phone,
-        'otp': otp,
-        'deviceId': widget.deviceId,
-        'deviceName': 'Flutter Device',
-        'platform': 'android',
-      });
+      final res = await apiClient.post(
+        ApiEndpoints.verifyOtp,
+        data: VerifyOtpRequest(
+          phoneNumber: widget.phone,
+          otp: otp,
+          deviceId: widget.deviceId,
+          deviceName: 'Flutter Device',
+          platform: 'android',
+        ).toJson(),
+      );
 
-      final data = res.data['data'];
+      final tokens = AuthTokens.fromJson(res.data['data'] as Map<String, dynamic>);
       await AuthStorage.saveTokens(
-        accessToken: data['accessToken'],
-        refreshToken: data['refreshToken'],
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       );
 
       if (mounted) {
-        if (data['isNewUser'] == true) {
+        if (tokens.isNewUser) {
           context.go('/profile-setup');
         } else {
           context.go('/chats');
@@ -112,11 +114,14 @@ class _OtpScreenState extends State<OtpScreen> {
 
   Future<void> _resend() async {
     try {
-      await apiClient.post('/auth/request-otp', data: {
-        'phoneNumber': widget.phone,
-        'deviceId': widget.deviceId,
-        'platform': 'android',
-      });
+      await apiClient.post(
+        ApiEndpoints.requestOtp,
+        data: RequestOtpRequest(
+          phoneNumber: widget.phone,
+          deviceId: widget.deviceId,
+          platform: 'android',
+        ).toJson(),
+      );
       setState(() { _timeLeft = _expireSec; _error = null; });
       _timer.cancel();
       _startTimer();

@@ -5,6 +5,8 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/utils.dart';
+import '../../../../core/models/models.dart';
 
 class PhoneScreen extends StatefulWidget {
   const PhoneScreen({super.key});
@@ -19,15 +21,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
   bool _isLoading = false;
   String? _error;
 
-  String _normalizePhone(String raw) {
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
-    if (digits.startsWith('0')) return '+82${digits.substring(1)}';
-    return '+82$digits';
-  }
+  String _normalizePhone(String raw) => normalizePhoneNumber(raw);
 
-  bool _isValidE164(String phone) {
-    return RegExp(r'^\+[1-9]\d{7,14}$').hasMatch(phone);
-  }
+  bool _isValidE164(String phone) => isValidPhoneNumber(phone);
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
@@ -43,11 +39,10 @@ class _PhoneScreenState extends State<PhoneScreen> {
       final deviceId = uuid.v4();
       await AuthStorage.saveDeviceId(deviceId);
 
-      await apiClient.post('/auth/request-otp', data: {
-        'phoneNumber': phone,
-        'deviceId': deviceId,
-        'platform': 'android',
-      });
+      await apiClient.post(
+        ApiEndpoints.requestOtp,
+        data: RequestOtpRequest(phoneNumber: phone, deviceId: deviceId, platform: 'android').toJson(),
+      );
 
       if (mounted) {
         context.push('/otp', extra: {'phone': phone, 'deviceId': deviceId});

@@ -6,7 +6,7 @@
     "baseUrl": "./",
     "incremental": true,
     "paths": {
-      "@ringtalk/shared": ["../../packages/shared/src"]
+      "@ringtalk/shared-server": ["../../packages/shared-server/src"]
     }
   },
   "include": ["src", "prisma"],

@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ApiResponse, ErrorCode } from '@ringtalk/shared';
+import { ApiResponse, ErrorCode } from '@ringtalk/shared-server';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {

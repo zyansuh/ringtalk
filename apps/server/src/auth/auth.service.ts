@@ -14,14 +14,14 @@ import { RedisService } from '../common/redis/redis.service';
 import { RequestOtpDto } from './dto/request-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { OtpResponse, AuthTokens, ErrorCode } from '@ringtalk/shared';
+import { OtpResponse, AuthTokens, ErrorCode } from '@ringtalk/shared-server';
 import {
   OTP_LENGTH,
   OTP_EXPIRES_IN,
   OTP_MAX_ATTEMPTS,
   OTP_RATE_LIMIT_WINDOW,
   OTP_RATE_LIMIT_MAX,
-} from '@ringtalk/shared';
+} from '@ringtalk/shared-server';
 
 @Injectable()
 export class AuthService {
