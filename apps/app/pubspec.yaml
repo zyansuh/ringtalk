@@ -1,0 +1,56 @@
+name: ringtalk
+description: 마음이 '링'하는 순간, 링톡 — 카카오톡 대항 메신저
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 라우팅
+  go_router: ^14.0.0
+
+  # 상태 관리
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # 네트워크
+  dio: ^5.7.0
+  web_socket_channel: ^3.0.1
+
+  # 로컬 저장소 (토큰 등 보안 데이터)
+  flutter_secure_storage: ^9.2.2
+
+  # 폼 검증
+  reactive_forms: ^17.0.0
+
+  # 유틸
+  intl: ^0.19.0
+  uuid: ^4.4.2
+  crypto: ^3.0.3
+
+  # UI 컴포넌트
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+
+  # 아이콘
+  cupertino_icons: ^1.0.8
+
+  # 환경변수
+  flutter_dotenv: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  riverpod_generator: ^2.4.3
+  build_runner: ^2.4.11
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - .env

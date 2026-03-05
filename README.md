@@ -11,8 +11,7 @@
 
 | 영역 | 기술 |
 |------|------|
-| 모바일 | React Native (Expo) |
-| 데스크톱 | Tauri 2 + React |
+| 앱 (모바일 + PC) | Flutter (Dart) — iOS / Android / Windows / macOS |
 | 서버 | NestJS (TypeScript) |
 | 실시간 | Socket.IO |
 | DB | PostgreSQL + Prisma ORM |
@@ -27,11 +26,15 @@
 ```
 ringtalk/
 ├── apps/
-│   ├── mobile/       # React Native (Expo) — iOS / Android
-│   ├── desktop/      # Tauri + React — Windows / macOS
+│   ├── app/          # Flutter — iOS / Android / Windows / macOS
+│   │   ├── lib/
+│   │   │   ├── core/         (theme, router, network, storage)
+│   │   │   ├── features/     (auth, chat, friends, settings)
+│   │   │   └── shared/       (공통 위젯)
+│   │   └── pubspec.yaml
 │   └── server/       # NestJS API 서버
 ├── packages/
-│   └── shared/       # 공통 타입, 상수, 유틸
+│   └── shared/       # 공통 타입, 상수, 유틸 (서버 전용 TypeScript)
 ├── docker-compose.yml
 ├── turbo.json
 └── pnpm-workspace.yaml
@@ -45,8 +48,8 @@ ringtalk/
 
 - Node.js >= 20
 - pnpm >= 9 (`npm install -g pnpm`)
+- Flutter SDK >= 3.0 ([flutter.dev](https://flutter.dev/docs/get-started/install))
 - Docker & Docker Compose (PostgreSQL + Redis)
-- Rust + Tauri CLI (데스크톱 앱용)
 
 ### 2. 의존성 설치
 
@@ -79,14 +82,19 @@ pnpm db:seed       # 테스트 데이터 삽입
 ### 6. 개발 서버 실행
 
 ```bash
-# 서버만
+# NestJS 서버
 pnpm server
 
-# 모바일 (Expo Go 필요)
-pnpm mobile
+# Flutter 앱 (시뮬레이터/디바이스 연결 후)
+cd apps/app
+flutter pub get
+flutter run
 
-# 데스크톱 (Rust/Tauri 필요)
-cd apps/desktop && pnpm tauri:dev
+# Flutter 특정 플랫폼 지정
+flutter run -d ios
+flutter run -d android
+flutter run -d macos
+flutter run -d windows
 ```
 
 ---
@@ -448,9 +456,10 @@ Success:       #43a047
 - [x] Rate Limit (전화번호 + IP)
 - [x] 디바이스별 세션 관리
 - [x] Prisma 스키마 + Docker Compose
-- [x] React Native(Expo) 로그인 화면 (Welcome → Phone → OTP → ProfileSetup)
-- [x] Tauri 데스크톱 로그인 화면
-- [x] 퍼플 디자인 토큰 시스템
+- [x] Flutter 앱 (iOS/Android/Windows/macOS 단일 코드베이스)
+- [x] Flutter 인증 화면 (Welcome → Phone → OTP → ProfileSetup)
+- [x] Flutter 메인 화면 (채팅/친구/설정)
+- [x] 퍼플 디자인 토큰 시스템 (AppColors, AppTheme)
 - [ ] 연락처 동기화 + 친구 매칭 (2주차)
 - [ ] WebSocket 실시간 채팅 (3주차)
 - [ ] 파일/이미지 Pre-signed 업로드 (4주차)

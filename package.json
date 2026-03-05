@@ -9,8 +9,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "server": "turbo run dev --filter=@ringtalk/server",
-    "mobile": "turbo run dev --filter=@ringtalk/mobile",
-    "desktop": "turbo run dev --filter=@ringtalk/desktop"
+    "app": "cd apps/app && flutter run"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
