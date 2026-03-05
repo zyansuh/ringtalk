@@ -1,6 +1,5 @@
-/// 날짜/시간 유틸리티 (TypeScript utils/date.ts의 Dart 버전)
+// 날짜/시간 유틸리티 (TypeScript utils/date.ts의 Dart 버전)
 
-import 'package:intl/intl.dart';
 
 /// 메시지 타임스탬프 포맷 (오전/오후 12:34)
 String formatMessageTime(DateTime date) {

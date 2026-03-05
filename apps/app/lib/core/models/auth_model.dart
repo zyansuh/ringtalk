@@ -1,4 +1,4 @@
-/// 인증 관련 Dart 모델
+// 인증 관련 Dart 모델
 
 class RequestOtpRequest {
   final String phoneNumber;

@@ -1,4 +1,4 @@
-/// 전화번호 유틸리티 (TypeScript utils/phone.ts의 Dart 버전)
+// 전화번호 유틸리티 (TypeScript utils/phone.ts의 Dart 버전)
 
 /// 전화번호를 E.164 형식으로 정규화
 /// 예: 01012345678 → +821012345678

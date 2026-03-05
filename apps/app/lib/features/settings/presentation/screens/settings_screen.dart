@@ -21,9 +21,10 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
-    if (ok == true && context.mounted) {
+    if (ok == true) {
       await AuthStorage.clear();
-      context.go('/welcome');
+      // mounted 체크 후 context 사용 (async gap 안전)
+      if (context.mounted) context.go('/welcome');
     }
   }
 
@@ -38,35 +39,35 @@ class SettingsScreen extends StatelessWidget {
           Container(
             color: AppColors.bgWhite,
             padding: const EdgeInsets.all(16),
-            child: Row(
+            child: const Row(
               children: [
                 CircleAvatar(
                   radius: 28,
                   backgroundColor: AppColors.primary,
-                  child: const Text('나', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 20)),
+                  child: Text('나', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 20)),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('내 프로필', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                      const SizedBox(height: 2),
+                      Text('내 프로필', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                      SizedBox(height: 2),
                       Text('상태 메시지를 설정해 보세요', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: AppColors.textDisabled),
+                Icon(Icons.chevron_right, color: AppColors.textDisabled),
               ],
             ),
           ),
           const SizedBox(height: 12),
-          _Section(title: '계정', items: [
+          const _Section(title: '계정', items: [
             _MenuItem(icon: Icons.person_rounded, title: '프로필 편집', subtitle: '이름, 사진, 상태 메시지'),
             _MenuItem(icon: Icons.notifications_rounded, title: '알림 설정', subtitle: '소리, 배너, 진동'),
           ]),
           const SizedBox(height: 12),
-          _Section(title: '보안', items: [
+          const _Section(title: '보안', items: [
             _MenuItem(icon: Icons.lock_rounded, title: '개인정보 보호', subtitle: '마지막 접속 공개 범위'),
             _MenuItem(icon: Icons.devices_rounded, title: '로그인된 기기', subtitle: '연결된 디바이스 관리'),
           ]),

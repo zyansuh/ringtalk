@@ -31,7 +31,7 @@ class WelcomeScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.4),
+                        color: AppColors.primary.withValues(alpha: 0.4),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
@@ -67,11 +67,11 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 const Spacer(flex: 1),
                 // 기능 소개
-                _FeatureRow(icon: Icons.lock_rounded, text: '엔드투엔드 암호화'),
+                const _FeatureRow(icon: Icons.lock_rounded, text: '엔드투엔드 암호화'),
                 const SizedBox(height: 12),
-                _FeatureRow(icon: Icons.bolt_rounded, text: '실시간 메시지'),
+                const _FeatureRow(icon: Icons.bolt_rounded, text: '실시간 메시지'),
                 const SizedBox(height: 12),
-                _FeatureRow(icon: Icons.devices_rounded, text: '모바일 · PC 동기화'),
+                const _FeatureRow(icon: Icons.devices_rounded, text: '모바일 · PC 동기화'),
                 const Spacer(flex: 2),
                 // 시작 버튼
                 ElevatedButton(
@@ -104,7 +104,7 @@ class _FeatureRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDefault.withOpacity(0.7),
+        color: AppColors.surfaceDefault.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.borderSubtle),
       ),

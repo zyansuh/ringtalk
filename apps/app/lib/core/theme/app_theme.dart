@@ -11,7 +11,6 @@ abstract class AppTheme {
           secondary: AppColors.primaryLight,
           surface: AppColors.surfaceDefault,
           surfaceContainerHighest: AppColors.surfaceSubtle,
-          background: AppColors.bgLight,
           error: AppColors.error,
         ),
         scaffoldBackgroundColor: AppColors.bgLight,
@@ -66,7 +65,7 @@ abstract class AppTheme {
             shape: const StadiumBorder(),
             textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
             elevation: 4,
-            shadowColor: AppColors.primary.withOpacity(0.35),
+            shadowColor: AppColors.primary.withValues(alpha: 0.35),
           ),
         ),
         textButtonTheme: TextButtonThemeData(
@@ -86,13 +85,20 @@ abstract class AppTheme {
           ),
         ),
         textTheme: const TextTheme(
-          displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
-          headlineMedium: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-          titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
-          bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
-          bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
-          bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
-          labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          displayLarge: TextStyle(
+              fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+          headlineMedium: TextStyle(
+              fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          titleLarge: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+          bodyLarge: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
+          bodyMedium: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textPrimary),
+          bodySmall: TextStyle(
+              fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textSecondary),
+          labelLarge: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
         ),
       );
 }

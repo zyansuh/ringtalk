@@ -1,4 +1,4 @@
-/// API 공통 응답/에러 Dart 모델
+// API 공통 응답/에러 Dart 모델
 
 class ApiResponse<T> {
   final bool success;

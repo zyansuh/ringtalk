@@ -1,4 +1,4 @@
-/// 채팅 관련 Dart 모델
+// 채팅 관련 Dart 모델
 
 import 'user_model.dart';
 

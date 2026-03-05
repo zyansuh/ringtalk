@@ -1,8 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'auth_storage.g.dart';
 
 const _storage = FlutterSecureStorage(
   aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -58,7 +55,7 @@ class AuthStorage {
   }
 }
 
-@riverpod
-Future<bool> isAuthenticated(Ref ref) async {
+// Plain Riverpod provider (no codegen)
+final isAuthenticatedProvider = FutureProvider<bool>((ref) async {
   return AuthStorage.isAuthenticated();
-}
+});

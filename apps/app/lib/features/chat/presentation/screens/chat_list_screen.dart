@@ -3,9 +3,9 @@ import '../../../../core/theme/app_colors.dart';
 
 // 플레이스홀더 데이터 (추후 API 연동)
 final _rooms = [
-  _Room(name: '김철수', lastMsg: '안녕하세요!', time: '오후 2:30', unread: 3),
-  _Room(name: '이영희', lastMsg: '나중에 봐요', time: '오전 11:15', unread: 0),
-  _Room(name: '개발팀', lastMsg: '오늘 배포합니다', time: '어제', unread: 12),
+  const _Room(name: '김철수', lastMsg: '안녕하세요!', time: '오후 2:30', unread: 3),
+  const _Room(name: '이영희', lastMsg: '나중에 봐요', time: '오전 11:15', unread: 0),
+  const _Room(name: '개발팀', lastMsg: '오늘 배포합니다', time: '어제', unread: 12),
 ];
 
 class ChatListScreen extends StatelessWidget {
@@ -22,7 +22,7 @@ class ChatListScreen extends StatelessWidget {
         ],
       ),
       body: _rooms.isEmpty
-          ? _EmptyState(
+          ? const _EmptyState(
               icon: Icons.chat_bubble_outline_rounded,
               title: '아직 채팅이 없어요',
               desc: '친구 탭에서 친구를 추가하고\n대화를 시작해 보세요!',

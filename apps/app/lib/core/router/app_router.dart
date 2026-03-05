@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/auth/presentation/screens/welcome_screen.dart';
 import '../../features/auth/presentation/screens/phone_screen.dart';
@@ -13,23 +11,23 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../storage/auth_storage.dart';
 import '../../shared/widgets/main_shell.dart';
 
-part 'app_router.g.dart';
+final routerProvider = Provider<GoRouter>((ref) {
+  final authAsync = ref.watch(isAuthenticatedProvider);
 
-@riverpod
-GoRouter router(Ref ref) {
-  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  // AsyncValue<bool> → bool (로딩 중엔 false로 처리)
+  final isAuthenticated = authAsync.valueOrNull ?? false;
 
   return GoRouter(
     initialLocation: isAuthenticated ? '/chats' : '/welcome',
     redirect: (context, state) {
       final loggedIn = isAuthenticated;
-      final onAuth = state.matchedLocation.startsWith('/welcome') ||
+      final onAuthRoute = state.matchedLocation.startsWith('/welcome') ||
           state.matchedLocation.startsWith('/phone') ||
           state.matchedLocation.startsWith('/otp') ||
           state.matchedLocation.startsWith('/profile-setup');
 
-      if (!loggedIn && !onAuth) return '/welcome';
-      if (loggedIn && onAuth) return '/chats';
+      if (!loggedIn && !onAuthRoute) return '/welcome';
+      if (loggedIn && onAuthRoute) return '/chats';
       return null;
     },
     routes: [
@@ -56,4 +54,4 @@ GoRouter router(Ref ref) {
       ),
     ],
   );
-}
+});

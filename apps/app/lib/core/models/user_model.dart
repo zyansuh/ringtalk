@@ -1,4 +1,4 @@
-/// 유저 관련 Dart 모델
+// 유저 관련 Dart 모델
 
 enum UserStatus { active, inactive, blocked, withdrawn }
 

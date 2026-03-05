@@ -61,12 +61,15 @@ class _OtpScreenState extends State<OtpScreen> {
     } else {
       _focusNodes[index].unfocus();
       final otp = _controllers.map((c) => c.text).join();
-      if (otp.length == _otpLength) _verify(otp);
+      if (otp.length == _otpLength) {
+        _verify(otp);
+      }
     }
   }
 
-  void _onKeyDown(RawKeyEvent event, int index) {
-    if (event is RawKeyDownEvent &&
+  // Flutter 3.18+ 새 키보드 API 사용
+  void _onKeyEvent(KeyEvent event, int index) {
+    if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.backspace &&
         _controllers[index].text.isEmpty &&
         index > 0) {
@@ -76,7 +79,10 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> _verify(String otp) async {
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final res = await apiClient.post(
         ApiEndpoints.verifyOtp,
@@ -103,9 +109,11 @@ class _OtpScreenState extends State<OtpScreen> {
         }
       }
     } on DioException catch (e) {
-      final msg = e.response?.data?['error']?['message'] ?? 'OTP 인증에 실패했습니다.';
+      final msg = e.response?.data?['error']?['message'] as String? ?? 'OTP 인증에 실패했습니다.';
       setState(() => _error = msg);
-      for (final c in _controllers) c.clear();
+      for (final c in _controllers) {
+        c.clear();
+      }
       _focusNodes[0].requestFocus();
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -122,13 +130,18 @@ class _OtpScreenState extends State<OtpScreen> {
           platform: 'android',
         ).toJson(),
       );
-      setState(() { _timeLeft = _expireSec; _error = null; });
+      setState(() {
+        _timeLeft = _expireSec;
+        _error = null;
+      });
       _timer.cancel();
       _startTimer();
-      for (final c in _controllers) c.clear();
+      for (final c in _controllers) {
+        c.clear();
+      }
       _focusNodes[0].requestFocus();
     } on DioException catch (e) {
-      setState(() => _error = e.response?.data?['error']?['message'] ?? '재발송 실패');
+      setState(() => _error = e.response?.data?['error']?['message'] as String? ?? '재발송 실패');
     }
   }
 
@@ -159,37 +172,43 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              // OTP 입력 박스
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(_otpLength, (i) => _OtpBox(
-                  controller: _controllers[i],
-                  focusNode: _focusNodes[i],
-                  onChanged: (v) => _onDigitChange(v, i),
-                  onKey: (e) => _onKeyDown(e, i),
-                  enabled: !_isLoading,
-                  autoFocus: i == 0,
-                )),
+                children: List.generate(
+                  _otpLength,
+                  (i) => _OtpBox(
+                    controller: _controllers[i],
+                    focusNode: _focusNodes[i],
+                    onChanged: (v) => _onDigitChange(v, i),
+                    onKeyEvent: (e) => _onKeyEvent(e, i),
+                    enabled: !_isLoading,
+                    autoFocus: i == 0,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              // 타이머 + 재발송
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _timeLeft > 0
                       ? RichText(
                           text: TextSpan(
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.textSecondary),
                             children: [
                               const TextSpan(text: '남은 시간: '),
                               TextSpan(
                                 text: _formatTime(_timeLeft),
-                                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+                                style: const TextStyle(
+                                    color: AppColors.primary, fontWeight: FontWeight.w700),
                               ),
                             ],
                           ),
                         )
-                      : const Text('인증번호가 만료되었습니다.', style: TextStyle(color: AppColors.error, fontSize: 13)),
+                      : const Text('인증번호가 만료되었습니다.',
+                          style: TextStyle(color: AppColors.error, fontSize: 13)),
                   TextButton(
                     onPressed: _timeLeft <= 150 ? _resend : null,
                     style: TextButton.styleFrom(
@@ -221,8 +240,12 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void dispose() {
     _timer.cancel();
-    for (final c in _controllers) c.dispose();
-    for (final f in _focusNodes) f.dispose();
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final f in _focusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 }
@@ -231,7 +254,7 @@ class _OtpBox extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final ValueChanged<String> onChanged;
-  final ValueChanged<RawKeyEvent> onKey;
+  final ValueChanged<KeyEvent> onKeyEvent;
   final bool enabled;
   final bool autoFocus;
 
@@ -239,16 +262,16 @@ class _OtpBox extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.onChanged,
-    required this.onKey,
+    required this.onKeyEvent,
     required this.enabled,
     required this.autoFocus,
   });
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: FocusNode(),
-      onKey: onKey,
+      onKeyEvent: onKeyEvent,
       child: SizedBox(
         width: 46,
         height: 56,
@@ -261,14 +284,16 @@ class _OtpBox extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLength: 1,
           onChanged: onChanged,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+          style: const TextStyle(
+              fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
           decoration: InputDecoration(
             counterText: '',
             contentPadding: EdgeInsets.zero,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: controller.text.isNotEmpty ? AppColors.primary : AppColors.borderDefault,
+                color:
+                    controller.text.isNotEmpty ? AppColors.primary : AppColors.borderDefault,
                 width: 2,
               ),
             ),

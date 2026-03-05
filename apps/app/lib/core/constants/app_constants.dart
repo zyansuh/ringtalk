@@ -1,4 +1,4 @@
-/// 링톡 앱 전역 상수
+// 링톡 앱 전역 상수
 
 abstract class AppConstants {
   static const appName = '링톡';
