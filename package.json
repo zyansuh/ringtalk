@@ -1,0 +1,25 @@
+{
+  "name": "ringtalk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "링톡 - 카카오톡 대항 메신저",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "server": "turbo run dev --filter=@ringtalk/server",
+    "mobile": "turbo run dev --filter=@ringtalk/mobile",
+    "desktop": "turbo run dev --filter=@ringtalk/desktop"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
