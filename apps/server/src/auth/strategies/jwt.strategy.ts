@@ -13,7 +13,7 @@ export interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    private readonly config: ConfigService,
+    config: ConfigService, // 인스턴스 저장 불필요, super()에서만 사용
     private readonly prisma: PrismaService,
   ) {
     super({

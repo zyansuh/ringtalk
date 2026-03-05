@@ -2,13 +2,13 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
-  TooManyRequestsException,
+  HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { RedisService } from '../common/redis/redis.service';
 import { RequestOtpDto } from './dto/request-otp.dto';
@@ -16,7 +16,6 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { OtpResponse, AuthTokens, ErrorCode } from '@ringtalk/shared-server';
 import {
-  OTP_LENGTH,
   OTP_EXPIRES_IN,
   OTP_MAX_ATTEMPTS,
   OTP_RATE_LIMIT_WINDOW,
@@ -242,11 +241,14 @@ export class AuthService {
 
     if (phoneCount >= OTP_RATE_LIMIT_MAX || ipCount >= OTP_RATE_LIMIT_MAX * 2) {
       const retryAfter = await this.redis.ttl(phoneKey);
-      throw new TooManyRequestsException({
-        code: ErrorCode.RATE_LIMIT,
-        message: '너무 많은 OTP 요청입니다. 잠시 후 다시 시도하세요.',
-        details: { retryAfter },
-      });
+      throw new HttpException(
+        {
+          code: ErrorCode.RATE_LIMIT,
+          message: '너무 많은 OTP 요청입니다. 잠시 후 다시 시도하세요.',
+          details: { retryAfter },
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
   }
 

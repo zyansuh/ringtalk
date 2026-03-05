@@ -10,7 +10,7 @@ class UpdateProfileDto {
 }
 
 class SearchByPhoneDto {
-  phoneHashes: string[];
+  phoneHashes!: string[];
 }
 
 @Controller('users')
