@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  #  서버 + 공유 패키지 TypeScript 검사
+  # ─────────────────────────────────────────────────────────────
+  server-check:
+    name: 🖥 Server — TypeScript
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: TypeScript check — shared-server
+        run: pnpm --filter @ringtalk/shared-server exec tsc --noEmit
+
+      - name: TypeScript check — server
+        run: pnpm --filter @ringtalk/server exec tsc --noEmit
+
+  # ─────────────────────────────────────────────────────────────
+  #  Flutter 정적 분석
+  # ─────────────────────────────────────────────────────────────
+  flutter-check:
+    name: 🐦 Flutter — Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        working-directory: apps/app
+        run: flutter pub get
+
+      - name: Flutter analyze
+        working-directory: apps/app
+        run: flutter analyze --no-fatal-infos
+
+      - name: Flutter test
+        working-directory: apps/app
+        run: flutter test
+
+  # ─────────────────────────────────────────────────────────────
+  #  빌드 가능 여부 확인 (Android APK)
+  # ─────────────────────────────────────────────────────────────
+  flutter-build:
+    name: 🏗 Flutter — Build Android
+    runs-on: ubuntu-latest
+    needs: flutter-check
+    # main 브랜치 push 때만 실행 (PR에서는 analyze만)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        working-directory: apps/app
+        run: flutter pub get
+
+      - name: Build Android APK (debug)
+        working-directory: apps/app
+        run: flutter build apk --debug --no-pub
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ringtalk-debug-${{ github.sha }}
+          path: apps/app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
