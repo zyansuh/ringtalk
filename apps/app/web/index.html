@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="마음이 '링'하는 순간, 링톡">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="링톡">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- 테마 컬러 — Primary 보라 -->
+  <meta name="theme-color" content="#B350CC">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>링톡</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(160deg, #F6E9F9 0%, #ECD3F2 100%);
+      font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    }
+
+    /* 앱 로딩 스플래시 */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, #F6E9F9 0%, #ECD3F2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .logo-circle {
+      width: 88px;
+      height: 88px;
+      background: #B350CC;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      box-shadow: 0 8px 24px rgba(179, 80, 204, 0.4);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(179,80,204,0.4); }
+      50%       { transform: scale(1.06); box-shadow: 0 12px 32px rgba(179,80,204,0.55); }
+    }
+    .app-name {
+      font-size: 32px;
+      font-weight: 800;
+      color: #B350CC;
+      letter-spacing: -0.5px;
+    }
+    .tagline {
+      font-size: 14px;
+      color: #664D78;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #E8D4F0;
+      border-top-color: #B350CC;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-top: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- 로딩 스플래시 -->
+  <div id="loading-overlay">
+    <div class="logo-circle">🔔</div>
+    <div class="app-name">링톡</div>
+    <div class="tagline">마음이 '링'하는 순간</div>
+    <div class="spinner"></div>
+  </div>
+
+  <script>
+    // Flutter 앱 로드 완료 후 스플래시 숨기기
+    window.addEventListener('flutter-first-frame', function() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        setTimeout(() => overlay.remove(), 500);
+      }
+    });
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
