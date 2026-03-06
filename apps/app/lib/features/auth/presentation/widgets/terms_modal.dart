@@ -60,7 +60,7 @@ class _TermsSheetState extends State<_TermsSheet> {
           ),
           const SizedBox(height: 20),
 
-          // ─── 제목 ────────────────────────────────────────────────
+          // ─── 제목 + 기능 소개 ──────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
@@ -79,6 +79,38 @@ class _TermsSheetState extends State<_TermsSheet> {
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
+                ),
+                const SizedBox(height: 20),
+
+                // ─── 서비스 기능 소개 카드 ─────────────────────────
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySurface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.borderSubtle),
+                  ),
+                  child: const Column(
+                    children: [
+                      _FeatureItem(
+                        icon: Icons.lock_rounded,
+                        title: '엔드투엔드 암호화',
+                        desc: '모든 메시지는 발신자와 수신자만 읽을 수 있습니다.',
+                      ),
+                      SizedBox(height: 12),
+                      _FeatureItem(
+                        icon: Icons.bolt_rounded,
+                        title: '실시간 메시지',
+                        desc: 'Socket.IO 기반으로 지연 없이 즉시 전달됩니다.',
+                      ),
+                      SizedBox(height: 12),
+                      _FeatureItem(
+                        icon: Icons.devices_rounded,
+                        title: '모바일 · PC 동기화',
+                        desc: 'iOS, Android, Windows, macOS, 웹에서 동시 사용 가능합니다.',
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -270,6 +302,57 @@ class _AgreeTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── 기능 소개 아이템 ─────────────────────────────────────────────────────────
+class _FeatureItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String desc;
+  const _FeatureItem({required this.icon, required this.title, required this.desc});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          decoration: const BoxDecoration(
+            color: AppColors.primarySurface,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 18),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                desc,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
