@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../widgets/terms_modal.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
+
+  Future<void> _onStart(BuildContext context) async {
+    // 이미 약관에 동의했으면 바로 이동
+    final alreadyAgreed = await AuthStorage.hasAgreedToTerms();
+    if (alreadyAgreed) {
+      if (context.mounted) context.push('/phone');
+      return;
+    }
+
+    // 첫 실행: 약관 모달 표시
+    if (!context.mounted) return;
+    final agreed = await showTermsModal(context);
+    if (!agreed) return;
+
+    await AuthStorage.setTermsAgreed();
+    if (context.mounted) context.push('/phone');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +40,20 @@ class WelcomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
-                const Spacer(flex: 2),
-                // 로고
+                const Spacer(flex: 3),
+
+                // ─── 로고 ─────────────────────────────────────────────
                 Container(
-                  width: 100,
-                  height: 100,
+                  width: 104,
+                  height: 104,
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.4),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
+                        color: AppColors.primary.withValues(alpha: 0.38),
+                        blurRadius: 28,
+                        offset: const Offset(0, 10),
                       ),
                     ],
                   ),
@@ -44,47 +64,71 @@ class WelcomeScreen extends StatelessWidget {
                       errorBuilder: (_, __, ___) => const Icon(
                         Icons.notifications_rounded,
                         color: Colors.white,
-                        size: 52,
+                        size: 54,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
+
+                // ─── 앱 이름 ──────────────────────────────────────────
                 Text(
                   '링톡',
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w800,
-                        fontSize: 42,
+                        fontSize: 44,
+                        letterSpacing: -0.5,
                       ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
                   "마음이 '링'하는 순간, 링톡",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                 ),
-                const Spacer(flex: 1),
-                // 기능 소개
-                const _FeatureRow(icon: Icons.lock_rounded, text: '엔드투엔드 암호화'),
-                const SizedBox(height: 12),
-                const _FeatureRow(icon: Icons.bolt_rounded, text: '실시간 메시지'),
-                const SizedBox(height: 12),
-                const _FeatureRow(icon: Icons.devices_rounded, text: '모바일 · PC 동기화'),
-                const Spacer(flex: 2),
-                // 시작 버튼
-                ElevatedButton(
-                  onPressed: () => context.push('/phone'),
-                  child: const Text('전화번호로 시작하기'),
-                ),
+
+                const Spacer(flex: 4),
+
+                // ─── 시작 버튼 ────────────────────────────────────────
+                _StartButton(onPressed: () => _onStart(context)),
+
                 const SizedBox(height: 16),
-                Text(
-                  '시작하면 서비스 이용약관 및 개인정보 처리방침에 동의합니다.',
-                  style: Theme.of(context).textTheme.bodySmall,
+
+                // ─── 약관 안내 텍스트 ──────────────────────────────────
+                RichText(
                   textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textDisabled,
+                          height: 1.5,
+                        ),
+                    children: const [
+                      TextSpan(text: '시작하면 '),
+                      TextSpan(
+                        text: '서비스 이용약관',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.textSecondary,
+                        ),
+                      ),
+                      TextSpan(text: ' 및 '),
+                      TextSpan(
+                        text: '개인정보 처리방침',
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.textSecondary,
+                        ),
+                      ),
+                      TextSpan(text: '\n에 동의하는 것으로 간주됩니다.'),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 32),
+
+                const SizedBox(height: 36),
               ],
             ),
           ),
@@ -94,27 +138,41 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-class _FeatureRow extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  const _FeatureRow({required this.icon, required this.text});
+// ─── 시작 버튼 (로딩 상태 포함) ───────────────────────────────────────────────
+class _StartButton extends StatefulWidget {
+  final Future<void> Function() onPressed;
+  const _StartButton({required this.onPressed});
+
+  @override
+  State<_StartButton> createState() => _StartButtonState();
+}
+
+class _StartButtonState extends State<_StartButton> {
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceDefault.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.primary, size: 22),
-          const SizedBox(width: 12),
-          Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
-        ],
-      ),
+    return ElevatedButton(
+      onPressed: _loading
+          ? null
+          : () async {
+              setState(() => _loading = true);
+              try {
+                await widget.onPressed();
+              } finally {
+                if (mounted) setState(() => _loading = false);
+              }
+            },
+      child: _loading
+          ? const SizedBox(
+              height: 22,
+              width: 22,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2.5,
+              ),
+            )
+          : const Text('전화번호로 시작하기'),
     );
   }
 }

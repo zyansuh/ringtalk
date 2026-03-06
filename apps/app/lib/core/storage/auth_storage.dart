@@ -53,6 +53,16 @@ class AuthStorage {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
   }
+
+  // 이용약관 동의 여부 (최초 1회)
+  static Future<bool> hasAgreedToTerms() async {
+    final value = await _storage.read(key: 'terms_agreed');
+    return value == 'true';
+  }
+
+  static Future<void> setTermsAgreed() async {
+    await _storage.write(key: 'terms_agreed', value: 'true');
+  }
 }
 
 // Plain Riverpod provider (no codegen)

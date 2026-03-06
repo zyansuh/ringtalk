@@ -115,14 +115,19 @@ class _PhoneScreenState extends State<PhoneScreen> {
                       height: 52,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceSubtle,
+                        // surfaceOverlay로 더 뚜렷하게
+                        color: AppColors.surfaceOverlay,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.borderDefault, width: 1.5),
                       ),
                       alignment: Alignment.center,
                       child: const Text(
                         '🇰🇷 +82',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary, // 명시적으로 어두운 색상
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -131,7 +136,13 @@ class _PhoneScreenState extends State<PhoneScreen> {
                         controller: _phoneCtrl,
                         keyboardType: TextInputType.phone,
                         autofocus: true,
-                        decoration: const InputDecoration(hintText: '010-0000-0000'),
+                        style: const TextStyle(color: AppColors.textPrimary),
+                        decoration: const InputDecoration(
+                          hintText: '010-0000-0000',
+                          hintStyle: TextStyle(color: AppColors.textDisabled),
+                          // 입력 필드도 더 뚜렷한 배경
+                          fillColor: AppColors.surfaceOverlay,
+                        ),
                         validator: (v) {
                           if (v == null || v.trim().isEmpty) return '전화번호를 입력하세요.';
                           if (v.replaceAll(RegExp(r'\D'), '').length < 9) {
