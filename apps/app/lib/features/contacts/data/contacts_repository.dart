@@ -101,12 +101,12 @@ class ContactsRepository {
     return result.where((c) => seen.add(c.phoneHash)).toList();
   }
 
-  // ─── 5. 서버 매칭 API ──────────────────────────────────────────────────────
+  // ─── 5. 서버 동기화 API ─────────────────────────────────────────────────────
 
-  /// 처리된 연락처를 서버로 보내 링톡 가입자 매칭
+  /// 처리된 연락처를 서버로 보내 링톡 가입자 매칭 + 친구 자동 등록
   ///
-  /// POST /users/search  { phoneHashes: [...] }
-  /// 응답: 매칭된 유저 목록 (id, displayName, profileImageUrl, presence 등)
+  /// POST /contacts/sync  { phoneHashes: [...] }
+  /// 응답: { matched: number, friends: UserPublicProfile[] }
   ///
   /// 배치 크기: 100개씩 나눠서 전송 (서버 과부하 방지)
   Future<List<RingTalkContact>> matchWithServer(
@@ -114,7 +114,6 @@ class ContactsRepository {
   ) async {
     if (processed.isEmpty) return [];
 
-    // 100개씩 배치 처리
     const batchSize = 100;
     final matched = <String, UserPublicProfile>{};
 
@@ -127,28 +126,25 @@ class ContactsRepository {
 
       try {
         final res = await apiClient.post(
-          ApiEndpoints.searchByPhone,
+          ApiEndpoints.contactsSync,
           data: {'phoneHashes': hashes},
         );
 
-        final users = (res.data['data'] as List<dynamic>?)
+        final friends = (res.data['data']?['friends'] as List<dynamic>?)
                 ?.map((e) => UserPublicProfile.fromJson(e as Map<String, dynamic>))
                 .toList() ??
             [];
 
-        // 서버가 반환한 유저의 phoneHash 기반으로 매핑
-        // (서버 응답에 phoneHash 포함 필요 — 아래 서버 수정 내용 참고)
-        for (final user in users) {
+        for (final user in friends) {
           if (user.phoneHash != null) {
             matched[user.phoneHash!] = user;
           }
         }
       } catch (e) {
-        debugPrint('[ContactsRepo] 배치 $i 매칭 실패: $e');
+        debugPrint('[ContactsRepo] 배치 $i 동기화 실패: $e');
       }
     }
 
-    // RingTalkContact 조합
     return processed.map((contact) {
       final profile = matched[contact.phoneHash];
       return RingTalkContact(local: contact, profile: profile);

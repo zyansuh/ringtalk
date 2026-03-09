@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ContactsModule } from './contacts/contacts.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 
@@ -37,6 +38,7 @@ import { RedisModule } from './common/redis/redis.module';
     RedisModule,
     AuthModule,
     UsersModule,
+    ContactsModule,
   ],
 })
 export class AppModule {}

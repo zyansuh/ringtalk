@@ -42,6 +42,10 @@ abstract class ApiEndpoints {
   static String blockUser(String id) => '/users/$id/block';
   static const searchByPhone = '/users/search';
 
+  // 연락처 동기화
+  static const contactsSync = '/contacts/sync';
+  static const contactsFriends = '/contacts/friends';
+
   // 채팅방
   static const rooms = '/rooms';
   static String roomDetail(String id) => '/rooms/$id';

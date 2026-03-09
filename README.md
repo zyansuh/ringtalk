@@ -272,6 +272,15 @@ pnpm add multer @types/multer -D
 
 ---
 
+## Contacts API
+
+| 메서드 | 엔드포인트 | 인증 | 설명 |
+|--------|-----------|------|------|
+| POST | `/api/v1/contacts/sync` | 🔒 | 연락처 해시 전송 → 친구 자동 등록 |
+| GET | `/api/v1/contacts/friends` | 🔒 | 수락된 친구 목록 (이름순) |
+
+---
+
 ## Auth API
 
 | 메서드 | 엔드포인트 | 인증 | 설명 |
@@ -330,8 +339,9 @@ PR / push → main, develop
 - [x] **SHA-256 해시 변환** (서버로 원본 번호 전송 없이 프라이버시 보호)
 - [x] **연락처 동기화 파이프라인** (100개 배치, 서버 IN 절 매칭)
 - [x] **서버 phoneHash bcrypt → SHA-256** (결정론적 해시로 검색 가능)
-- [ ] `POST /contacts/sync` 서버 API 구현
-- [ ] 친구 목록 UI → 프로필 → "채팅하기"
+- [x] **`POST /contacts/sync`** — 해시 전송 → 가입자 매칭 → 친구 자동 등록
+- [x] **`GET /contacts/friends`** — 수락된 친구 목록 (이름순, 별명 우선)
+- [x] **친구 목록 UI** — 동기화 상태 배너 + 친구 타일 + "채팅하기" 버튼
 - [ ] 1:1 채팅방 생성 (participants 유니크)
 - [ ] 채팅 목록 (최근 메시지 / 안 읽음 뱃지)
 
