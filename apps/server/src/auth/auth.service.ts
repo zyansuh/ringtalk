@@ -9,6 +9,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { createHash } from 'crypto';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { RedisService } from '../common/redis/redis.service';
 import { RequestOtpDto } from './dto/request-otp.dto';
@@ -262,10 +263,15 @@ export class AuthService {
     const existing = await this.prisma.user.findUnique({ where: { phoneE164 } });
     if (existing) return { user: existing, isNewUser: false };
 
+    // phoneHash: SHA-256(E.164) — 클라이언트와 동일한 방식으로 저장
+    // 이렇게 해야 연락처 동기화 API에서 클라이언트가 보낸 해시와 IN 절 매칭 가능
+    // bcrypt는 salt가 달라 매번 다른 값 → 검색 불가
+    const phoneHash = createHash('sha256').update(phoneE164).digest('hex');
+
     const user = await this.prisma.user.create({
       data: {
         phoneE164,
-        phoneHash: await bcrypt.hash(phoneE164, 12),
+        phoneHash,
         displayName: '링톡 사용자',
       },
     });

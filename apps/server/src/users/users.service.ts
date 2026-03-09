@@ -26,9 +26,16 @@ export class UsersService {
   }
 
   async searchByPhoneHash(phoneHashes: string[]) {
+    // phoneHash(SHA-256)를 함께 반환 — 클라이언트가 매칭 역방향 맵 구성에 사용
     return this.prisma.user.findMany({
       where: { phoneHash: { in: phoneHashes } },
-      select: { id: true, displayName: true, profileImageUrl: true, statusMessage: true },
+      select: {
+        id: true,
+        displayName: true,
+        profileImageUrl: true,
+        statusMessage: true,
+        phoneHash: true, // 클라이언트 매칭용
+      },
     });
   }
 

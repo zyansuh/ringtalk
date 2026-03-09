@@ -83,6 +83,10 @@ class UserPublicProfile {
   final Presence presence;
   final DateTime? lastSeenAt;
 
+  /// 서버가 연락처 매칭 응답 시 함께 반환하는 phoneHash
+  /// (일반 프로필 조회에서는 null)
+  final String? phoneHash;
+
   const UserPublicProfile({
     required this.id,
     required this.displayName,
@@ -90,6 +94,7 @@ class UserPublicProfile {
     this.statusMessage,
     required this.presence,
     this.lastSeenAt,
+    this.phoneHash,
   });
 
   factory UserPublicProfile.fromJson(Map<String, dynamic> json) =>
@@ -102,6 +107,7 @@ class UserPublicProfile {
         lastSeenAt: json['lastSeenAt'] != null
             ? DateTime.parse(json['lastSeenAt'] as String)
             : null,
+        phoneHash: json['phoneHash'] as String?,
       );
 }
 
