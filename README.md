@@ -158,13 +158,21 @@ flutter run -d windows     # Windows 네이티브
 | `flutter_riverpod` | 상태 관리 |
 | `dio` | HTTP 클라이언트 + 자동 토큰 갱신 |
 | `web_socket_channel` | WebSocket (Socket.IO 연동 예정) |
-| `flutter_secure_storage` | 토큰 보안 저장 (Keychain / Keystore) |
+| `flutter_secure_storage` | 토큰·이용약관 동의 보안 저장 |
 | `reactive_forms` | 폼 유효성 검사 |
 | `cached_network_image` | 이미지 캐싱 |
 | `shimmer` | 스켈레톤 로딩 UI |
 | `uuid` | 클라이언트 임시 메시지 ID |
-| `crypto` | 전화번호 해시 (SHA-256) |
+| `crypto` | 전화번호 SHA-256 해시 |
 | `intl` | 날짜/시간 포맷 |
+| `flutter_contacts` | 기기 연락처 동기화 |
+| `permission_handler` | 권한 요청 (연락처/카메라/알림) |
+| `socket_io_client` | Socket.IO 실시간 채팅 (3주차) |
+| `image_picker` | 이미지 첨부 (4주차) |
+| `file_picker` | 파일 첨부 (4주차) |
+| `flutter_svg` | SVG 아이콘 |
+| `lottie` | 애니메이션 |
+| `flutter_slidable` | 채팅 아이템 스와이프 액션 |
 
 ## 추가 설치 필요한 패키지 (2주차 준비)
 
@@ -236,25 +244,31 @@ pnpm add multer @types/multer -D
 ## 디자인 토큰 (퍼플 테마)
 
 ```
-[라이트 모드]
-Primary:       #B350CC / #BD66D2 / #9A3DB0
-Background:    #F6E9F9 (기본) / #ECD3F2 (딥)
-Surface:       #FEF8FF (보라 틴트 화이트)
-Text:          #1C0A24 (주) / #664D78 (보조)
+[Primary]
+  primary        #B350CC   보라 (브랜드, CTA)
+  primaryHover   #BD66D2   hover / ripple
+  primaryDark    #9A3DB0   pressed
+  primaryDeep    #7B2D9C   강조 포인트
+  primarySurface #F3E0FA   뱃지 배경
 
-[다크 모드]
-Background:    #140820 (기본) / #0D0514 (딥)
-Surface:       #1C0A28
-Text:          #F0E6F6 (주) / #B09ABE (보조)
+[라이트 모드 배경]
+  bgDefault  #F6E9F9   기본 스캐폴드
+  bgDeep     #ECD3F2   섹션 구분·그라데이션
+  bgTinted   #FEF8FF   보라 틴트 화이트 (카드)
+
+[다크 모드 배경]
+  bgDefault  #140820   딥 퍼플 블랙
+  bgDeep     #0D0514   더 깊은 블랙
+  bgTinted   #1C0A28   다크 카드
 
 [Semantic]
-Error:         #F51E0F  포르쉐 레드
-Warning:       #FFEF40  개나리 옐로
-Success:       #2680A8  스틸 블루
-Info:          #7C4DBA  인디고 퍼플
+  error      #F51E0F + Light #F86257 + Dark #DD1B0E  포르쉐 레드
+  warning    #FFEF40 + Light #FFF479 + Dark #C8B800  개나리 옐로
+  success    #2680A8   스틸 블루
+  info       #7C4DBA   인디고 퍼플
 ```
 
-> 다크모드: 기기 시스템 설정 자동 추적 (`ThemeMode.system`)
+> 다크모드: `ThemeMode.system` — 기기 설정 자동 추적
 
 ---
 
@@ -293,26 +307,32 @@ PR / push → main, develop
 ### ✅ 1주차: 아키텍처/기반 공사 + 인증 골격
 
 - [x] pnpm + Turborepo 모노레포
-- [x] Flutter 앱 (iOS/Android/Windows/macOS 단일 코드베이스)
+- [x] Flutter 앱 (iOS/Android/Windows/macOS/**Web** 단일 코드베이스)
 - [x] NestJS 서버 골격
 - [x] `packages/shared-server` (TypeScript 공통 타입/상수/유틸)
-- [x] 퍼플 디자인 토큰 + **다크모드 토대**
+- [x] 퍼플 디자인 토큰 (라이트/다크 모드, warning 개나리·error 포르쉐 레드)
+- [x] **다크모드 토대** (`AppColorsDark` + `AppTheme.dark` + `ThemeMode.system`)
 - [x] Auth API (OTP 요청/검증/갱신/로그아웃)
 - [x] OTP Rate Limit (전화번호 + IP)
 - [x] 디바이스별 세션 관리
 - [x] Prisma 스키마 + Docker Compose
 - [x] 로그인 화면 (Welcome → Phone → OTP → ProfileSetup)
-- [x] **GitHub Actions CI**
+- [x] **이용약관 + 개인정보처리방침 동의 모달** (최초 1회, 약관 전문 보기)
+- [x] **GitHub Actions CI** (analyze + build + artifact)
+- [x] **Flutter Web 플랫폼 추가** (PWA 메니페스트, 브랜딩 스플래시)
 
 ---
 
-### 2주차: 연락처/친구 + 1:1 채팅방 생성
+### 🚧 2주차: 연락처/친구 + 1:1 채팅방 생성
 
-- [ ] 연락처 권한 → E.164 정규화 → SHA-256 해시
-- [ ] `POST /contacts/sync` (해시 목록 업로드)
-- [ ] `GET /friends`
-- [ ] 1:1 채팅방 생성 (participants 유니크)
+- [x] **연락처 권한 처리** (permission_handler, iOS/Android/Web 분기)
+- [x] **전화번호 E.164 정규화** (010-, 02-, +82- 등 다양한 포맷)
+- [x] **SHA-256 해시 변환** (서버로 원본 번호 전송 없이 프라이버시 보호)
+- [x] **연락처 동기화 파이프라인** (100개 배치, 서버 IN 절 매칭)
+- [x] **서버 phoneHash bcrypt → SHA-256** (결정론적 해시로 검색 가능)
+- [ ] `POST /contacts/sync` 서버 API 구현
 - [ ] 친구 목록 UI → 프로필 → "채팅하기"
+- [ ] 1:1 채팅방 생성 (participants 유니크)
 - [ ] 채팅 목록 (최근 메시지 / 안 읽음 뱃지)
 
 ### 3주차: 실시간 메시징 + ACK/읽음
@@ -431,3 +451,34 @@ Prisma 스키마 파일: `apps/server/prisma/schema.prisma`
 | `error` | `{ code, message }` | 오류 |
 
 > `clientMessageId(uuid)`로 멱등 처리 — 재전송해도 중복 저장 없음
+
+---
+
+## 연락처 동기화 파이프라인
+
+```
+기기 연락처 (LocalContact)
+    │
+    ▼  phone_utils.normalizeContactNumbers()
+    │
+    │  010-1234-5678    →  +821012345678  ✅
+    │  010 1234 5678    →  +821012345678  ✅
+    │  02-123-4567      →  +82212345678   ✅
+    │  +82-10-1234-5678 →  +821012345678  ✅
+    │  잘못된 번호        →  (제외)         ❌
+    │
+    ▼  contact_hash_utils.hashPhoneE164()  [SHA-256]
+    │
+ProcessedContact { e164Number, phoneHash(SHA-256) }
+    │
+    ▼  100개 배치 → POST /users/search { phoneHashes: [...] }
+    │
+    ▼  서버: WHERE phoneHash IN (클라이언트 해시 목록)
+    │
+RingTalkContact { local, profile? }
+    ├── isOnRingTalk == true  → 링톡 친구 목록
+    └── isOnRingTalk == false → 초대 가능 목록
+```
+
+**프라이버시 설계**: 서버는 원본 전화번호를 수신하지 않습니다.
+클라이언트가 SHA-256 해시만 전송하고 서버도 동일 방식으로 저장하여 IN 절 매칭.
