@@ -42,9 +42,8 @@ abstract class ApiEndpoints {
   static String blockUser(String id) => '/users/$id/block';
   static const searchByPhone = '/users/search';
 
-  // 연락처 동기화
+  // 연락처 동기화 (친구 목록은 GET /users/me/friends 사용)
   static const contactsSync = '/contacts/sync';
-  static const contactsFriends = '/contacts/friends';
 
   // 채팅방
   static const rooms = '/rooms';

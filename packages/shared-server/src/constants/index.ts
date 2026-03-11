@@ -102,6 +102,9 @@ export const ApiEndpoints = {
     blockUser: (id: string) => `/users/${id}/block`,
     searchByPhone: '/users/search',
   },
+  contacts: {
+    sync: '/contacts/sync',
+  },
   rooms: {
     list: '/rooms',
     create: '/rooms',

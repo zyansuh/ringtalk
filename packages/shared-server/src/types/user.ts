@@ -22,7 +22,8 @@ export interface UserPublicProfile {
   displayName: string;
   profileImageUrl?: string;
   statusMessage?: string;
-  presence: Presence;
+  phoneHash?: string; // 연락처 매칭용 (클라이언트 역방향 맵핑)
+  presence?: Presence;
   lastSeenAt?: string;
 }
 
