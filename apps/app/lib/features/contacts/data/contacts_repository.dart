@@ -5,12 +5,12 @@
 //   2. 기기 연락처 가져오기 (flutter_contacts)
 //   3. 전화번호 E.164 정규화 (phone_utils)
 //   4. SHA-256 해시 변환 (contact_hash_utils)
-//   5. 서버 매칭 API 호출 (/users/search)
+//   5. 서버 매칭 API 호출 (/contacts/sync)
 //   6. RingTalkContact 결과 반환
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/contact_model.dart';
@@ -23,9 +23,9 @@ class ContactsRepository {
   // ─── 1. 권한 요청 ───────────────────────────────────────────────────────────
 
   /// 연락처 권한 상태 반환
-  Future<PermissionStatus> getContactPermissionStatus() async {
-    if (kIsWeb) return PermissionStatus.denied; // 웹 미지원
-    return Permission.contacts.status;
+  Future<ph.PermissionStatus> getContactPermissionStatus() async {
+    if (kIsWeb) return ph.PermissionStatus.denied; // 웹 미지원
+    return ph.Permission.contacts.status;
   }
 
   /// 연락처 권한 요청
@@ -34,14 +34,14 @@ class ContactsRepository {
   ///   - granted              → 바로 진행 가능
   ///   - denied               → 다시 요청 가능
   ///   - permanentlyDenied    → 설정 앱으로 안내 필요
-  Future<PermissionStatus> requestContactPermission() async {
-    if (kIsWeb) return PermissionStatus.denied;
-    final status = await Permission.contacts.request();
+  Future<ph.PermissionStatus> requestContactPermission() async {
+    if (kIsWeb) return ph.PermissionStatus.denied;
+    final status = await ph.Permission.contacts.request();
     return status;
   }
 
   /// 설정 앱 열기 (permanentlyDenied 대응)
-  Future<void> openAppSettings() => openAppSettings();
+  Future<void> openAppSettings() => ph.openAppSettings();
 
   // ─── 2. 연락처 가져오기 ─────────────────────────────────────────────────────
 
@@ -109,13 +109,17 @@ class ContactsRepository {
   /// 응답: { matched: number, friends: UserPublicProfile[] }
   ///
   /// 배치 크기: 100개씩 나눠서 전송 (서버 과부하 방지)
-  Future<List<RingTalkContact>> matchWithServer(
+  /// 반환: (결과 목록, 실패한 배치 수)
+  Future<({List<RingTalkContact> contacts, int failedBatches})> matchWithServer(
     List<ProcessedContact> processed,
   ) async {
-    if (processed.isEmpty) return [];
+    if (processed.isEmpty) {
+      return (contacts: <RingTalkContact>[], failedBatches: 0);
+    }
 
     const batchSize = 100;
     final matched = <String, UserPublicProfile>{};
+    var failedBatches = 0;
 
     for (var i = 0; i < processed.length; i += batchSize) {
       final batch = processed.sublist(
@@ -141,14 +145,19 @@ class ContactsRepository {
           }
         }
       } catch (e) {
+        failedBatches++;
         debugPrint('[ContactsRepo] 배치 $i 동기화 실패: $e');
       }
     }
 
-    return processed.map((contact) {
-      final profile = matched[contact.phoneHash];
-      return RingTalkContact(local: contact, profile: profile);
-    }).toList();
+    final List<RingTalkContact> contacts = processed
+        .map((contact) => RingTalkContact(
+              local: contact,
+              profile: matched[contact.phoneHash],
+            ))
+        .toList();
+
+    return (contacts: contacts, failedBatches: failedBatches);
   }
 
   // ─── 전체 파이프라인 ─────────────────────────────────────────────────────────
@@ -168,7 +177,7 @@ class ContactsRepository {
     onProgress?.call(ContactSyncStatus.requestingPermission);
     var status = await requestContactPermission();
 
-    if (status == PermissionStatus.permanentlyDenied) {
+    if (status == ph.PermissionStatus.permanentlyDenied) {
       return const ContactSyncResult(
         status: ContactSyncStatus.permissionPermanentlyDenied,
       );
@@ -194,13 +203,24 @@ class ContactsRepository {
 
     // 4. 서버 매칭
     onProgress?.call(ContactSyncStatus.syncing);
-    final results = await matchWithServer(processed);
+    final matchResult = await matchWithServer(processed);
 
-    final matched = results.where((c) => c.isOnRingTalk).length;
+    final matched = matchResult.contacts.where((c) => c.isOnRingTalk).length;
+
+    if (matchResult.failedBatches > 0) {
+      return ContactSyncResult(
+        status: ContactSyncStatus.done,
+        contacts: matchResult.contacts,
+        totalContacts: processed.length,
+        matchedCount: matched,
+        errorMessage:
+            '일부 배치 동기화 실패 (${matchResult.failedBatches}건). 결과는 부분 반영되었습니다.',
+      );
+    }
 
     return ContactSyncResult(
       status: ContactSyncStatus.done,
-      contacts: results,
+      contacts: matchResult.contacts,
       totalContacts: processed.length,
       matchedCount: matched,
     );
