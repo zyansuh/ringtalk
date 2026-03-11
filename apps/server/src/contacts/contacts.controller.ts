@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 import { SyncContactsDto } from './dto/sync-contacts.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -25,12 +25,4 @@ export class ContactsController {
     return this.contacts.syncContacts(user.sub, dto.phoneHashes);
   }
 
-  /**
-   * GET /contacts/friends
-   * 수락된 친구 목록 반환 (이름순)
-   */
-  @Get('friends')
-  getFriends(@CurrentUser() user: JwtPayload) {
-    return this.contacts.getFriends(user.sub);
-  }
 }

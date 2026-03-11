@@ -56,32 +56,4 @@ export class ContactsService {
     };
   }
 
-  // ─── GET /friends ────────────────────────────────────────────────────────────
-  // 수락된 친구 목록 반환 (이름순 정렬)
-  async getFriends(userId: string) {
-    const friends = await this.prisma.friend.findMany({
-      where: { userId, status: 'accepted' },
-      include: {
-        friend: {
-          select: {
-            id: true,
-            displayName: true,
-            profileImageUrl: true,
-            statusMessage: true,
-            phoneHash: true,
-          },
-        },
-      },
-      orderBy: [
-        { friend: { displayName: 'asc' } },
-      ],
-    });
-
-    return friends.map((f) => ({
-      ...f.friend,
-      displayName: f.alias ?? f.friend.displayName, // 별명 우선
-      alias: f.alias,
-      friendedAt: f.createdAt,
-    }));
-  }
 }
