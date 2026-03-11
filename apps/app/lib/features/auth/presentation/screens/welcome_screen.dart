@@ -42,31 +42,15 @@ class WelcomeScreen extends StatelessWidget {
               children: [
                 const Spacer(flex: 3),
 
-                // ─── 로고 ─────────────────────────────────────────────
-                Container(
-                  width: 104,
-                  height: 104,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.38),
-                        blurRadius: 28,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.notifications_rounded,
-                        color: Colors.white,
-                        size: 54,
-                      ),
-                    ),
+                // ─── 로고 (RingTalk 종+텍스트) ─────────────────────────
+                Image.asset(
+                  'assets/images/app_logo.png',
+                  height: 88,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.notifications_rounded,
+                    color: Colors.white,
+                    size: 54,
                   ),
                 ),
                 const SizedBox(height: 24),
