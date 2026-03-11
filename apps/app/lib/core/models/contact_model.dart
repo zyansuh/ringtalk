@@ -60,6 +60,20 @@ class RingTalkContact {
   bool get isOnRingTalk => profile != null;
 
   String get displayName => local.displayName;
+
+  /// 서버 GET /users/me/friends 응답으로부터 생성
+  /// (연락처 동기화 없이 서버에 저장된 친구만 표시할 때 사용)
+  factory RingTalkContact.fromServerFriend(Map<String, dynamic> json) {
+    final profile = UserPublicProfile.fromJson(json);
+    final displayName =
+        json['displayName'] as String? ?? profile.displayName;
+    final dummy = ProcessedContact(
+      displayName: displayName,
+      e164Number: '',
+      phoneHash: profile.phoneHash ?? '',
+    );
+    return RingTalkContact(local: dummy, profile: profile);
+  }
 }
 
 // ─── 연락처 동기화 상태 ──────────────────────────────────────────────────────

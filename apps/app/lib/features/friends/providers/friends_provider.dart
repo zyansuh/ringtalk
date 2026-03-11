@@ -1,6 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/contact_model.dart';
 import '../../contacts/providers/contacts_provider.dart';
+import '../data/friends_repository.dart';
+
+const _undefined = Object();
+
+// ─── Repository ─────────────────────────────────────────────────────────────
+final friendsRepositoryProvider = Provider<FriendsRepository>(
+  (_) => FriendsRepository(),
+);
 
 // 친구 목록 상태
 enum FriendsLoadStatus { idle, loading, done, error }
@@ -28,7 +36,7 @@ class FriendsState {
     ContactSyncStatus? syncStatus,
     int? totalContacts,
     int? matchedCount,
-    String? errorMessage,
+    Object? errorMessage = _undefined,
   }) =>
       FriendsState(
         status: status ?? this.status,
@@ -36,7 +44,9 @@ class FriendsState {
         syncStatus: syncStatus ?? this.syncStatus,
         totalContacts: totalContacts ?? this.totalContacts,
         matchedCount: matchedCount ?? this.matchedCount,
-        errorMessage: errorMessage ?? this.errorMessage,
+        errorMessage: identical(errorMessage, _undefined)
+            ? this.errorMessage
+            : errorMessage as String?,
       );
 
   bool get isSyncing =>
@@ -76,9 +86,28 @@ class FriendsNotifier extends StateNotifier<FriendsState> {
 
   FriendsNotifier(this._ref) : super(const FriendsState());
 
+  /// 연락처 동기화 (POST /contacts/sync)
   Future<void> syncContacts() async {
     final notifier = _ref.read(contactSyncProvider.notifier);
     await notifier.sync();
+  }
+
+  /// 서버에서 친구 목록 조회 (GET /users/me/friends)
+  Future<void> fetchFriends() async {
+    state = state.copyWith(status: FriendsLoadStatus.loading);
+    try {
+      final repo = _ref.read(friendsRepositoryProvider);
+      final friends = await repo.fetchFriends();
+      state = state.copyWith(
+        status: FriendsLoadStatus.done,
+        friends: friends,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: FriendsLoadStatus.error,
+        errorMessage: e.toString(),
+      );
+    }
   }
 
   void _onSyncResultChanged(ContactSyncResult result) {
@@ -87,7 +116,7 @@ class FriendsNotifier extends StateNotifier<FriendsState> {
       friends: result.contacts.where((c) => c.isOnRingTalk).toList(),
       totalContacts: result.totalContacts,
       matchedCount: result.matchedCount,
-      errorMessage: result.errorMessage,
+      errorMessage: result.errorMessage, // null이면 이전 에러 초기화
     );
   }
 }

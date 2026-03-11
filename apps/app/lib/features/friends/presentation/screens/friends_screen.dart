@@ -4,11 +4,26 @@ import '../../../../core/models/contact_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../providers/friends_provider.dart';
 
-class FriendsScreen extends ConsumerWidget {
+class FriendsScreen extends ConsumerStatefulWidget {
   const FriendsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FriendsScreen> createState() => _FriendsScreenState();
+}
+
+class _FriendsScreenState extends ConsumerState<FriendsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 서버에서 친구 목록 조회
+    // API: GET /users/me/friends
+    Future.microtask(
+      () => ref.read(friendsProvider.notifier).fetchFriends(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(friendsProvider);
 
     return Scaffold(
@@ -16,7 +31,24 @@ class FriendsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('친구'),
         actions: [
-          // 연락처 동기화 버튼
+          // 서버에서 친구 목록 새로고침 (GET /users/me/friends)
+          IconButton(
+            icon: state.status == FriendsLoadStatus.loading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                : const Icon(Icons.refresh_rounded),
+            tooltip: '친구 목록 새로고침',
+            onPressed: state.status == FriendsLoadStatus.loading
+                ? null
+                : () => ref.read(friendsProvider.notifier).fetchFriends(),
+          ),
+          // 연락처 동기화 버튼 (POST /contacts/sync)
           IconButton(
             icon: state.isSyncing
                 ? const SizedBox(
@@ -43,13 +75,45 @@ class FriendsScreen extends ConsumerWidget {
 
           // ─── 친구 목록 ──────────────────────────────────────────────
           Expanded(
-            child: state.friends.isEmpty
-                ? _EmptyFriendsView(
+            child: state.status == FriendsLoadStatus.loading
+                ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  )
+                : state.status == FriendsLoadStatus.error
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.error_outline_rounded,
+                              size: 48,
+                              color: AppColors.error,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              state.errorMessage ?? '친구 목록을 불러오지 못했어요',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            TextButton.icon(
+                              onPressed: () => ref
+                                  .read(friendsProvider.notifier)
+                                  .fetchFriends(),
+                              icon: const Icon(Icons.refresh_rounded),
+                              label: const Text('다시 시도'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : state.friends.isEmpty
+                    ? _EmptyFriendsView(
                     hasSynced: state.syncStatus == ContactSyncStatus.done,
                     isSyncing: state.isSyncing,
-                    onSync: () => ref.read(friendsProvider.notifier).syncContacts(),
-                  )
-                : _FriendsList(friends: state.friends),
+                        onSync: () =>
+                            ref.read(friendsProvider.notifier).syncContacts(),
+                      )
+                    : _FriendsList(friends: state.friends),
           ),
         ],
       ),
