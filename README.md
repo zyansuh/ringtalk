@@ -16,7 +16,7 @@
 
 | 영역 | 기술 | 비고 |
 |------|------|------|
-| 앱 (모바일 + PC) | Flutter (Dart) | iOS / Android / Windows / macOS |
+| 앱 (모바일 + PC + Web) | Flutter (Dart) | iOS / Android / Windows / macOS / Web |
 | 백엔드 | NestJS (TypeScript) | REST API |
 | 실시간 | Socket.IO | WebSocket |
 | DB | PostgreSQL 16 + Prisma ORM | |
@@ -36,7 +36,7 @@ ringtalk/
 │   └── workflows/
 │       └── ci.yml          # GitHub Actions CI
 ├── apps/
-│   ├── app/                # Flutter — iOS / Android / Windows / macOS
+│   ├── app/                # Flutter — iOS / Android / Windows / macOS / Web
 │   │   ├── lib/
 │   │   │   ├── core/
 │   │   │   │   ├── constants/   (앱 상수, API 엔드포인트, WS 이벤트)
@@ -45,11 +45,12 @@ ringtalk/
 │   │   │   │   ├── router/      (go_router, 인증 리다이렉트)
 │   │   │   │   ├── storage/     (flutter_secure_storage)
 │   │   │   │   ├── theme/       (AppColors, AppColorsDark, AppTheme)
-│   │   │   │   └── utils/       (phone_utils, date_utils)
+│   │   │   │   └── utils/       (phone_utils, contact_hash_utils, date_utils)
 │   │   │   ├── features/
 │   │   │   │   ├── auth/        (Welcome → Phone → OTP → ProfileSetup)
 │   │   │   │   ├── chat/        (채팅 목록)
-│   │   │   │   ├── friends/     (친구 목록)
+│   │   │   │   ├── contacts/    (연락처 동기화, data/contacts_repository)
+│   │   │   │   ├── friends/     (친구 목록, data/friends_repository)
 │   │   │   │   └── settings/    (설정, 로그아웃)
 │   │   │   └── shared/widgets/  (MainShell 탭 네비게이션)
 │   │   └── pubspec.yaml
@@ -57,6 +58,7 @@ ringtalk/
 │       ├── src/
 │       │   ├── auth/            (OTP, JWT, Passport 전략)
 │       │   ├── users/           (프로필, 친구, 차단)
+│       │   ├── contacts/       (연락처 동기화, syncContacts)
 │       │   └── common/          (Prisma, Redis, Guards, Filters)
 │       └── prisma/
 │           └── schema.prisma    (9개 모델)
@@ -142,6 +144,7 @@ pnpm server
 # Flutter 앱
 cd apps/app
 flutter run                # 연결된 기기/시뮬레이터 자동 선택
+flutter run -d chrome      # 웹 (Chrome)
 flutter run -d ios         # iOS 시뮬레이터
 flutter run -d android     # Android 에뮬레이터
 flutter run -d macos       # macOS 네이티브
@@ -157,7 +160,8 @@ flutter run -d windows     # Windows 네이티브
 | `go_router` | 라우팅 (ShellRoute 탭 네비게이션) |
 | `flutter_riverpod` | 상태 관리 |
 | `dio` | HTTP 클라이언트 + 자동 토큰 갱신 |
-| `web_socket_channel` | WebSocket (Socket.IO 연동 예정) |
+| `web_socket_channel` | WebSocket |
+| `socket_io_client` | Socket.IO 실시간 채팅 (3주차) |
 | `flutter_secure_storage` | 토큰·이용약관 동의 보안 저장 |
 | `reactive_forms` | 폼 유효성 검사 |
 | `cached_network_image` | 이미지 캐싱 |
@@ -167,39 +171,14 @@ flutter run -d windows     # Windows 네이티브
 | `intl` | 날짜/시간 포맷 |
 | `flutter_contacts` | 기기 연락처 동기화 |
 | `permission_handler` | 권한 요청 (연락처/카메라/알림) |
-| `socket_io_client` | Socket.IO 실시간 채팅 (3주차) |
 | `image_picker` | 이미지 첨부 (4주차) |
 | `file_picker` | 파일 첨부 (4주차) |
+| `flutter_dotenv` | 환경변수 (.env) |
 | `flutter_svg` | SVG 아이콘 |
 | `lottie` | 애니메이션 |
 | `flutter_slidable` | 채팅 아이템 스와이프 액션 |
 
-## 추가 설치 필요한 패키지 (2주차 준비)
-
-```bash
-cd apps/app
-```
-
-### Flutter
-
-```bash
-# 연락처 동기화 (2주차 핵심)
-flutter pub add flutter_contacts
-flutter pub add permission_handler
-
-# Socket.IO 실시간 채팅 (3주차)
-flutter pub add socket_io_client
-
-# 이미지/파일 첨부 (4주차)
-flutter pub add image_picker
-flutter pub add image_cropper
-flutter pub add file_picker
-
-# UI 개선
-flutter pub add flutter_svg
-flutter pub add lottie
-flutter pub add flutter_slidable
-```
+## 네이티브 설정 (필수)
 
 > ⚠️ `permission_handler` 설치 후 **네이티브 설정 필수**:
 >
@@ -277,7 +256,7 @@ pnpm add multer @types/multer -D
 | 메서드 | 엔드포인트 | 인증 | 설명 |
 |--------|-----------|------|------|
 | POST | `/api/v1/contacts/sync` | 🔒 | 연락처 해시 전송 → 친구 자동 등록 |
-| GET | `/api/v1/contacts/friends` | 🔒 | 수락된 친구 목록 (이름순) |
+| GET | `/api/v1/users/me/friends` | 🔒 | 수락된 친구 목록 (이름순, alias·phoneHash 포함) |
 
 ---
 
@@ -340,8 +319,9 @@ PR / push → main, develop
 - [x] **연락처 동기화 파이프라인** (100개 배치, 서버 IN 절 매칭)
 - [x] **서버 phoneHash bcrypt → SHA-256** (결정론적 해시로 검색 가능)
 - [x] **`POST /contacts/sync`** — 해시 전송 → 가입자 매칭 → 친구 자동 등록
-- [x] **`GET /contacts/friends`** — 수락된 친구 목록 (이름순, 별명 우선)
+- [x] **`GET /users/me/friends`** — 수락된 친구 목록 (이름순, 별명 우선)
 - [x] **친구 목록 UI** — 동기화 상태 배너 + 친구 타일 + "채팅하기" 버튼
+- [x] **`GET /users/me/friends`** — FriendsRepository, 화면 진입 시 서버에서 친구 목록 조회
 - [ ] 1:1 채팅방 생성 (participants 유니크)
 - [ ] 채팅 목록 (최근 메시지 / 안 읽음 뱃지)
 
@@ -481,7 +461,7 @@ Prisma 스키마 파일: `apps/server/prisma/schema.prisma`
     │
 ProcessedContact { e164Number, phoneHash(SHA-256) }
     │
-    ▼  100개 배치 → POST /users/search { phoneHashes: [...] }
+    ▼  100개 배치 → POST /contacts/sync { phoneHashes: [...] }
     │
     ▼  서버: WHERE phoneHash IN (클라이언트 해시 목록)
     │
