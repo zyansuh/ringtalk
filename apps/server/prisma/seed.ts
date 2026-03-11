@@ -1,14 +1,18 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();
+
+function sha256Phone(phoneE164: string): string {
+  return createHash('sha256').update(phoneE164).digest('hex');
+}
 
 async function main() {
   console.log('🌱 DB 시드 시작...');
 
-  // 개발용 테스트 유저
-  const phoneHash1 = await bcrypt.hash('+821011111111', 12);
-  const phoneHash2 = await bcrypt.hash('+821022222222', 12);
+  // 개발용 테스트 유저 (auth.service와 동일한 SHA-256 방식)
+  const phoneHash1 = sha256Phone('+821011111111');
+  const phoneHash2 = sha256Phone('+821022222222');
 
   const user1 = await prisma.user.upsert({
     where: { phoneE164: '+821011111111' },
