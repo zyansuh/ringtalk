@@ -115,6 +115,9 @@ class _OtpScreenState extends State<OtpScreen> {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       );
+      if (tokens.userId != null) {
+        await AuthStorage.saveUserId(tokens.userId!);
+      }
 
       if (mounted) {
         if (tokens.isNewUser) {

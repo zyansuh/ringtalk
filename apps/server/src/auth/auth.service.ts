@@ -113,7 +113,7 @@ export class AuthService {
 
     this.logger.log(`로그인 성공: userId=${user.id} device=${deviceName} (신규: ${isNewUser})`);
 
-    return { ...tokens, isNewUser };
+    return { ...tokens, isNewUser, userId: user.id } as typeof tokens & { isNewUser: boolean; userId: string };
   }
 
   // ─── 토큰 갱신 ─────────────────────────────────────────────────────────────

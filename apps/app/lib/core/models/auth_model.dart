@@ -80,12 +80,14 @@ class AuthTokens {
   final String refreshToken;
   final int expiresIn;
   final bool isNewUser;
+  final String? userId;
 
   const AuthTokens({
     required this.accessToken,
     required this.refreshToken,
     required this.expiresIn,
     this.isNewUser = false,
+    this.userId,
   });
 
   factory AuthTokens.fromJson(Map<String, dynamic> json) => AuthTokens(
@@ -93,6 +95,7 @@ class AuthTokens {
         refreshToken: json['refreshToken'] as String,
         expiresIn: json['expiresIn'] as int,
         isNewUser: json['isNewUser'] as bool? ?? false,
+        userId: json['userId'] as String?,
       );
 }
 
