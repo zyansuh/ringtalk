@@ -1,115 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/models/chat_model.dart';
+import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../providers/rooms_provider.dart';
+import '../widgets/chat_room_tile.dart';
+import '../widgets/empty_chats_view.dart';
 
-// 플레이스홀더 데이터 (추후 API 연동)
-final _rooms = [
-  const _Room(name: '김철수', lastMsg: '안녕하세요!', time: '오후 2:30', unread: 3),
-  const _Room(name: '이영희', lastMsg: '나중에 봐요', time: '오전 11:15', unread: 0),
-  const _Room(name: '개발팀', lastMsg: '오늘 배포합니다', time: '어제', unread: 12),
-];
-
-class ChatListScreen extends StatelessWidget {
+class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
 
   @override
+  ConsumerState<ChatListScreen> createState() => _ChatListScreenState();
+}
+
+class _ChatListScreenState extends ConsumerState<ChatListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => ref.read(roomsProvider.notifier).fetchRooms(),
+    );
+  }
+
+  Future<void> _onRefresh() async {
+    await ref.read(roomsProvider.notifier).fetchRooms();
+  }
+
+  void _onRoomTap(String roomId, String? displayName) {
+    context.push(
+      '/chats/$roomId',
+      extra: displayName != null ? {'displayName': displayName} : null,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = ref.watch(roomsProvider);
+    final rooms = state.rooms;
+
     return Scaffold(
       backgroundColor: AppColors.bgTinted,
       appBar: AppBar(
         title: const Text('채팅'),
         actions: [
-          IconButton(icon: const Icon(Icons.edit_rounded), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.edit_rounded),
+            onPressed: () {},
+          ),
         ],
       ),
-      body: _rooms.isEmpty
-          ? const _EmptyState(
-              icon: Icons.chat_bubble_outline_rounded,
-              title: '아직 채팅이 없어요',
-              desc: '친구 탭에서 친구를 추가하고\n대화를 시작해 보세요!',
-            )
-          : ListView.separated(
-              itemCount: _rooms.length,
-              separatorBuilder: (_, __) => const Divider(indent: 72, height: 0),
-              itemBuilder: (context, i) => _RoomTile(room: _rooms[i]),
-            ),
+      body: _buildBody(context, state, rooms),
     );
   }
-}
 
-class _RoomTile extends StatelessWidget {
-  final _Room room;
-  const _RoomTile({required this.room});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      leading: CircleAvatar(
-        radius: 26,
-        backgroundColor: AppColors.primaryHover,
-        child: Text(
-          room.name[0],
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 20),
+  Widget _buildBody(
+    BuildContext context,
+    RoomsState state,
+    List<ChatRoom> rooms,
+  ) {
+    if (state.status == RoomsLoadStatus.loading && rooms.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
+    }
+    if (state.status == RoomsLoadStatus.error && rooms.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              state.errorMessage ?? '채팅 목록을 불러오지 못했어요',
+              style: const TextStyle(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => ref.read(roomsProvider.notifier).fetchRooms(),
+              child: const Text('다시 시도'),
+            ),
+          ],
         ),
-      ),
-      title: Row(
-        children: [
-          Expanded(
-            child: Text(room.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-          ),
-          Text(room.time, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-        ],
-      ),
-      subtitle: Row(
-        children: [
-          Expanded(
-            child: Text(
-              room.lastMsg,
-              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (room.unread > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-              child: Text(
-                '${room.unread}',
-                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
-              ),
-            ),
-        ],
-      ),
-      onTap: () {},
-    );
-  }
-}
+      );
+    }
+    if (rooms.isEmpty) {
+      return const EmptyChatsView();
+    }
 
-class _EmptyState extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String desc;
-  const _EmptyState({required this.icon, required this.title, required this.desc});
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      color: AppColors.primary,
+      child: FutureBuilder<String?>(
+        future: AuthStorage.getUserId(),
+        builder: (context, snapshot) {
+          final myUserId = snapshot.data ?? '';
+          if (myUserId.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 64, color: AppColors.textDisabled),
-          const SizedBox(height: 16),
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
-          Text(desc, style: const TextStyle(color: AppColors.textSecondary), textAlign: TextAlign.center),
-        ],
+          return ListView.separated(
+            itemCount: rooms.length,
+            separatorBuilder: (_, __) => const Divider(indent: 72, height: 0),
+            itemBuilder: (context, i) {
+              final room = rooms[i];
+              return ChatRoomTile(
+                room: room,
+                myUserId: myUserId,
+                onTap: () => _onRoomTap(room.id, room.displayName(myUserId)),
+              );
+            },
+          );
+        },
       ),
     );
   }
-}
-
-class _Room {
-  final String name, lastMsg, time;
-  final int unread;
-  const _Room({required this.name, required this.lastMsg, required this.time, required this.unread});
 }

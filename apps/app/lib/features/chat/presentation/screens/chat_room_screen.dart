@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
-/// 1:1 채팅방 화면 (플레이스홀더 — 3주차 실시간 메시징 연동 예정)
+/// 채팅방 화면 (roomId 기반 — 메시지 로드/전송은 추후 연동)
 class ChatRoomScreen extends StatelessWidget {
   const ChatRoomScreen({
     super.key,
-    required this.friendId,
-    required this.friendName,
+    required this.roomId,
+    this.displayName,
   });
 
-  final String friendId;
-  final String friendName;
+  final String roomId;
+  final String? displayName;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgDefault,
       appBar: AppBar(
-        title: Text(friendName),
+        title: Text(displayName ?? '채팅'),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
@@ -39,7 +39,7 @@ class ChatRoomScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                '$friendName님과의 대화',
+                displayName != null ? '$displayName님과의 대화' : '채팅방',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -48,7 +48,7 @@ class ChatRoomScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                '실시간 채팅 기능은 3주차에 연동 예정입니다.',
+                '메시지 전송 기능은 추후 연동 예정입니다.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                     ),
