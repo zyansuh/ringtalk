@@ -16,7 +16,8 @@ class ContactSyncNotifier extends StateNotifier<ContactSyncResult> {
 
   Future<void> sync() async {
     // 이미 진행 중이면 중복 방지
-    if (state.status == ContactSyncStatus.fetchingContacts ||
+    if (state.status == ContactSyncStatus.requestingPermission ||
+        state.status == ContactSyncStatus.fetchingContacts ||
         state.status == ContactSyncStatus.processing ||
         state.status == ContactSyncStatus.syncing) {
       return;
