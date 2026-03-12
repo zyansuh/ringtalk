@@ -52,6 +52,10 @@ abstract class ApiEndpoints {
   static String sendMessage(String id) => '/rooms/$id/messages';
   static String readMessage(String id) => '/rooms/$id/read';
 
+  // 채팅 (목록, 1:1 생성)
+  static const chats = '/chats';
+  static const chatsDirect = '/chats/direct';
+
   // 미디어
   static const mediaUpload = '/media/upload';
   static const presignedUrl = '/media/presigned-url';
