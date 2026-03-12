@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { RoomsModule } from './rooms/rooms.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 
@@ -39,6 +40,7 @@ import { RedisModule } from './common/redis/redis.module';
     AuthModule,
     UsersModule,
     ContactsModule,
+    RoomsModule,
   ],
 })
 export class AppModule {}
