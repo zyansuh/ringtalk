@@ -61,6 +61,7 @@ ringtalk/
 │       │   ├── contacts/       (연락처 동기화, syncContacts)
 │       │   ├── chats/           (GET /chats, POST /chats/direct)
 │       │   ├── rooms/           (RoomsService, CreateDirectRoomDto)
+│       │   ├── websocket/       (Socket.IO Gateway, JWT 인증)
 │       │   └── common/          (Prisma, Redis, Guards, Filters)
 │       └── prisma/
 │           └── schema.prisma    (9개 모델)
@@ -338,7 +339,7 @@ PR / push → main, develop
 
 ### 3주차: 실시간 메시징 + ACK/읽음
 
-- [ ] Socket.IO 게이트웨이 + JWT 인증
+- [x] **Socket.IO 게이트웨이 + JWT 인증** — handshake 시 `auth.accessToken` 검증, 세션 확인
 - [ ] `message.send` / `message.new` / `message.status` 이벤트
 - [ ] `client_message_id` 멱등성 보장
 - [ ] 읽음 처리 (`last_read_message_id`)
@@ -430,13 +431,33 @@ Prisma 스키마 파일: `apps/server/prisma/schema.prisma`
 
 ---
 
+## WebSocket (Socket.IO)
+
+**연결 URL:** `http://localhost:3000` (API 서버와 동일 포트, path: `/socket.io`)
+
+**인증:** 연결 시 `auth` 객체에 `accessToken` 전달
+
+```javascript
+import { io } from 'socket.io-client';
+const socket = io('http://localhost:3000', {
+  auth: { accessToken: '<JWT>' },
+});
+socket.on('authenticated', (data) => console.log('인증 완료:', data.userId));
+```
+
+- handshake 시 JWT 검증 + 세션 확인
+- 인증 성공 시 `authenticated` 이벤트 emit
+- 인증 실패 시 연결 거부
+
+---
+
 ## WebSocket 이벤트
 
 ### 클라 → 서버
 
 | 이벤트 | 페이로드 | 설명 |
 |--------|---------|------|
-| `auth.connect` | `{ accessToken }` | WS 인증 |
+| (연결 시) | `auth: { accessToken }` | WS 인증 (handshake) |
 | `message.send` | `{ chatId, clientMessageId, text?, attachments? }` | 메시지 전송 |
 | `message.ack` | `{ messageId }` | 저장 완료 확인 |
 | `chat.read` | `{ chatId, lastReadMessageId }` | 읽음 처리 |
