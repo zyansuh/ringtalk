@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/models/contact_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../chat/providers/rooms_provider.dart';
 import '../../providers/friends_provider.dart';
 import '../widgets/empty_friends_view.dart';
 import '../widgets/friends_error_view.dart';
@@ -31,12 +32,21 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     context.push('/friends/profile', extra: contact);
   }
 
-  void _onChatTap(RingTalkContact contact) {
+  Future<void> _onChatTap(RingTalkContact contact) async {
     final profile = contact.profile;
     if (profile == null) return;
+
+    final room = await ref.read(roomsProvider.notifier).getOrCreateDirectRoom(profile.id);
+    if (!mounted) return;
+    if (room == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('채팅방을 열 수 없어요. 다시 시도해 주세요.')),
+      );
+      return;
+    }
     context.push(
-      '/chats/direct/${profile.id}',
-      extra: {'friendName': contact.displayName},
+      '/chats/${room.id}',
+      extra: {'displayName': contact.displayName},
     );
   }
 
@@ -99,7 +109,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     return FriendsListContent(
       friends: state.friends,
       onProfileTap: _onProfileTap,
-      onChatTap: _onChatTap,
+      onChatTap: (c) => _onChatTap(c),
       onRefresh: _onRefresh,
     );
   }

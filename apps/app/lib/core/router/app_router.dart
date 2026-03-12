@@ -52,13 +52,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(path: '/chats', builder: (_, __) => const ChatListScreen()),
           GoRoute(
-            path: '/chats/direct/:friendId',
+            path: '/chats/:roomId',
             builder: (_, state) {
-              final params = state.pathParameters;
+              final roomId = state.pathParameters['roomId']!;
               final extra = state.extra as Map<String, String>?;
               return ChatRoomScreen(
-                friendId: params['friendId']!,
-                friendName: extra?['friendName'] ?? '친구',
+                roomId: roomId,
+                displayName: extra?['displayName'],
               );
             },
           ),

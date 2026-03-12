@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/models/contact_model.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../chat/providers/rooms_provider.dart';
 import '../../providers/friends_provider.dart';
 
 /// 친구 프로필 화면
@@ -82,7 +83,7 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: () => _onChatTap(context, contact),
+                  onPressed: () async => await _onChatTap(context, contact),
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 22),
                   label: const Text('채팅하기'),
                   style: FilledButton.styleFrom(
@@ -123,12 +124,21 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
     );
   }
 
-  void _onChatTap(BuildContext context, RingTalkContact contact) {
+  Future<void> _onChatTap(BuildContext context, RingTalkContact contact) async {
     final profile = contact.profile;
     if (profile == null) return;
+
+    final room = await ref.read(roomsProvider.notifier).getOrCreateDirectRoom(profile.id);
+    if (!mounted) return;
+    if (room == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('채팅방을 열 수 없어요. 다시 시도해 주세요.')),
+      );
+      return;
+    }
     context.push(
-      '/chats/direct/${profile.id}',
-      extra: {'friendName': contact.displayName},
+      '/chats/${room.id}',
+      extra: {'displayName': contact.displayName},
     );
   }
 
