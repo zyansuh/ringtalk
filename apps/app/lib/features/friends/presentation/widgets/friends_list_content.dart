@@ -9,11 +9,13 @@ class FriendsListContent extends StatelessWidget {
   const FriendsListContent({
     super.key,
     required this.friends,
+    this.onProfileTap,
     this.onChatTap,
     this.onRefresh,
   });
 
   final List<RingTalkContact> friends;
+  final void Function(RingTalkContact)? onProfileTap;
   final void Function(RingTalkContact)? onChatTap;
   final Future<void> Function()? onRefresh;
 
@@ -37,6 +39,9 @@ class FriendsListContent extends StatelessWidget {
                   children: [
                     FriendTile(
                       contact: contact,
+                      onProfileTap: onProfileTap != null
+                          ? () => onProfileTap!(contact)
+                          : null,
                       onChatTap: onChatTap != null
                           ? () => onChatTap!(contact)
                           : null,

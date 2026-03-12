@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/models/contact_model.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -26,8 +27,17 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     );
   }
 
+  void _onProfileTap(RingTalkContact contact) {
+    context.push('/friends/profile', extra: contact);
+  }
+
   void _onChatTap(RingTalkContact contact) {
-    // TODO 3주차: 1:1 채팅방 생성 후 이동
+    final profile = contact.profile;
+    if (profile == null) return;
+    context.push(
+      '/chats/direct/${profile.id}',
+      extra: {'friendName': contact.displayName},
+    );
   }
 
   Future<void> _onRefresh() async {
@@ -88,6 +98,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     }
     return FriendsListContent(
       friends: state.friends,
+      onProfileTap: _onProfileTap,
       onChatTap: _onChatTap,
       onRefresh: _onRefresh,
     );

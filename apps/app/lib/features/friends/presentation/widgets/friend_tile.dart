@@ -6,9 +6,15 @@ import '../../../../core/theme/app_colors.dart';
 
 /// 친구 목록 타일
 class FriendTile extends StatelessWidget {
-  const FriendTile({super.key, required this.contact, this.onChatTap});
+  const FriendTile({
+    super.key,
+    required this.contact,
+    this.onProfileTap,
+    this.onChatTap,
+  });
 
   final RingTalkContact contact;
+  final VoidCallback? onProfileTap;
   final VoidCallback? onChatTap;
 
   @override
@@ -20,7 +26,7 @@ class FriendTile extends StatelessWidget {
     return Material(
       color: AppColors.surfaceDefault,
       child: InkWell(
-        onTap: onChatTap,
+        onTap: onProfileTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(

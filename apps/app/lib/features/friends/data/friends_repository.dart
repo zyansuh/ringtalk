@@ -56,4 +56,10 @@ class FriendsRepository {
       rethrow;
     }
   }
+
+  /// 친구 차단
+  /// API: POST /users/:id/block
+  Future<void> blockUser(String userId) async {
+    await apiClient.post(ApiEndpoints.blockUser(userId));
+  }
 }

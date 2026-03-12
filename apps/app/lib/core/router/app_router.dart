@@ -6,8 +6,11 @@ import '../../features/auth/presentation/screens/phone_screen.dart';
 import '../../features/auth/presentation/screens/otp_screen.dart';
 import '../../features/auth/presentation/screens/profile_setup_screen.dart';
 import '../../features/chat/presentation/screens/chat_list_screen.dart';
+import '../../features/chat/presentation/screens/chat_room_screen.dart';
+import '../../features/friends/presentation/screens/friend_profile_screen.dart';
 import '../../features/friends/presentation/screens/friends_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../models/contact_model.dart';
 import '../storage/auth_storage.dart';
 import '../../shared/widgets/main_shell.dart';
 
@@ -48,7 +51,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __, child) => MainShell(child: child),
         routes: [
           GoRoute(path: '/chats', builder: (_, __) => const ChatListScreen()),
+          GoRoute(
+            path: '/chats/direct/:friendId',
+            builder: (_, state) {
+              final params = state.pathParameters;
+              final extra = state.extra as Map<String, String>?;
+              return ChatRoomScreen(
+                friendId: params['friendId']!,
+                friendName: extra?['friendName'] ?? '친구',
+              );
+            },
+          ),
           GoRoute(path: '/friends', builder: (_, __) => const FriendsScreen()),
+          GoRoute(
+            path: '/friends/profile',
+            builder: (_, state) {
+              final contact = state.extra as RingTalkContact;
+              return FriendProfileScreen(contact: contact);
+            },
+          ),
           GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
         ],
       ),
