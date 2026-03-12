@@ -113,6 +113,10 @@ export const ApiEndpoints = {
     sendMessage: (id: string) => `/rooms/${id}/messages`,
     readMessage: (id: string) => `/rooms/${id}/read`,
   },
+  chats: {
+    list: '/chats',
+    createDirect: '/chats/direct',
+  },
   media: {
     upload: '/media/upload',
     presigned: '/media/presigned-url',
