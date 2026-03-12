@@ -48,7 +48,7 @@ ringtalk/
 │   │   │   │   └── utils/       (phone_utils, contact_hash_utils, date_utils)
 │   │   │   ├── features/
 │   │   │   │   ├── auth/        (Welcome → Phone → OTP → ProfileSetup)
-│   │   │   │   ├── chat/        (채팅 목록)
+│   │   │   │   ├── chat/        (채팅 목록, RoomsRepository, roomId 기반 화면)
 │   │   │   │   ├── contacts/    (연락처 동기화, data/contacts_repository)
 │   │   │   │   ├── friends/     (친구 목록, data/friends_repository)
 │   │   │   │   └── settings/    (설정, 로그아웃)
@@ -59,6 +59,8 @@ ringtalk/
 │       │   ├── auth/            (OTP, JWT, Passport 전략)
 │       │   ├── users/           (프로필, 친구, 차단)
 │       │   ├── contacts/       (연락처 동기화, syncContacts)
+│       │   ├── chats/           (GET /chats, POST /chats/direct)
+│       │   ├── rooms/           (RoomsService, CreateDirectRoomDto)
 │       │   └── common/          (Prisma, Redis, Guards, Filters)
 │       └── prisma/
 │           └── schema.prisma    (9개 모델)
@@ -260,6 +262,15 @@ pnpm add multer @types/multer -D
 
 ---
 
+## Chats API
+
+| 메서드 | 엔드포인트 | 인증 | 설명 |
+|--------|-----------|------|------|
+| GET | `/api/v1/chats` | 🔒 | 채팅 목록 (participants, lastMessage, unreadCount 포함) |
+| POST | `/api/v1/chats/direct` | 🔒 | 1:1 채팅방 생성 또는 기존 방 반환 (body: `{ participantId }`) |
+
+---
+
 ## Auth API
 
 | 메서드 | 엔드포인트 | 인증 | 설명 |
@@ -322,8 +333,8 @@ PR / push → main, develop
 - [x] **`GET /users/me/friends`** — 수락된 친구 목록 (이름순, 별명 우선)
 - [x] **친구 목록 UI** — 동기화 상태 배너 + 친구 타일 + "채팅하기" 버튼
 - [x] **`GET /users/me/friends`** — FriendsRepository, 화면 진입 시 서버에서 친구 목록 조회
-- [ ] 1:1 채팅방 생성 (participants 유니크)
-- [ ] 채팅 목록 (최근 메시지 / 안 읽음 뱃지)
+- [x] **1:1 채팅방 생성** — `POST /chats/direct` (participants 유니크, 친구 관계 검증)
+- [x] **채팅 목록** — `GET /chats` (최근 메시지, 안 읽음 뱃지, roomId 기반 화면)
 
 ### 3주차: 실시간 메시징 + ACK/읽음
 
