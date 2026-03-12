@@ -41,6 +41,7 @@ export const ErrorCode = {
   // 유저
   USER_NOT_FOUND: 'USER_NOT_FOUND',
   USER_BLOCKED: 'USER_BLOCKED',
+  FORBIDDEN: 'FORBIDDEN',
 
   // 채팅
   ROOM_NOT_FOUND: 'ROOM_NOT_FOUND',
