@@ -61,6 +61,18 @@ abstract class ApiEndpoints {
   static const presignedUrl = '/media/presigned-url';
 }
 
+/// 네트워크 기본 URL (API_URL에서 origin 추출)
+abstract class NetworkUrls {
+  static const _apiUrl = String.fromEnvironment(
+    'API_URL',
+    defaultValue: 'http://localhost:3000/api/v1',
+  );
+
+  /// Socket.IO 서버 URL (API와 동일 호스트)
+  static String get socketBase =>
+      Uri.parse(_apiUrl).replace(path: '').toString();
+}
+
 /// WebSocket 이벤트 이름
 abstract class WsEvents {
   // 연결

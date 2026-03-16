@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/network/socket_provider.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  Future<void> _logout(BuildContext context) async {
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -22,6 +24,7 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
     if (ok == true) {
+      ref.read(socketServiceProvider).disconnect();
       await AuthStorage.clear();
       // mounted 체크 후 context 사용 (async gap 안전)
       if (context.mounted) context.go('/welcome');
@@ -29,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
       appBar: AppBar(title: const Text('설정')),
@@ -79,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
                 const Text('링톡 v0.1.0', style: TextStyle(fontSize: 12, color: AppColors.textDisabled)),
                 const SizedBox(height: 16),
                 OutlinedButton(
-                  onPressed: () => _logout(context),
+                  onPressed: () => _logout(context, ref),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
                     side: const BorderSide(color: AppColors.error),
