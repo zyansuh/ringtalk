@@ -4,27 +4,28 @@
   <p><strong>마음이 '링'하는 순간, 링톡</strong></p>
   <p>카카오톡을 겨냥한 메신저 앱 — <strong>모바일(iOS/Android) + PC(Windows/macOS)</strong> 지원</p>
 
-  ![CI](https://github.com/zyansuh/ringtalk/actions/workflows/ci.yml/badge.svg)
-  ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
-  ![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs)
-  ![License](https://img.shields.io/badge/license-MIT-purple)
+![CI](https://github.com/zyansuh/ringtalk/actions/workflows/ci.yml/badge.svg)
+![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
+![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs)
+![License](https://img.shields.io/badge/license-MIT-purple)
+
 </div>
 
 ---
 
 ## 기술 스택
 
-| 영역 | 기술 | 비고 |
-|------|------|------|
-| 앱 (모바일 + PC + Web) | Flutter (Dart) | iOS / Android / Windows / macOS / Web |
-| 백엔드 | NestJS (TypeScript) | REST API |
-| 실시간 | Socket.IO | WebSocket |
-| DB | PostgreSQL 16 + Prisma ORM | |
-| 캐시/세션 | Redis 7 (ioredis) | Rate Limit, 세션 |
-| 인증 | 전화번호 OTP + JWT | Access 15분 / Refresh 30일 |
-| 파일 스토리지 | S3 호환 + Pre-signed URL | 서버 직접 중계 없음 |
-| 모노레포 | pnpm workspaces + Turborepo | |
-| CI | GitHub Actions | analyze + build |
+| 영역                   | 기술                        | 비고                                  |
+| ---------------------- | --------------------------- | ------------------------------------- |
+| 앱 (모바일 + PC + Web) | Flutter (Dart)              | iOS / Android / Windows / macOS / Web |
+| 백엔드                 | NestJS (TypeScript)         | REST API                              |
+| 실시간                 | Socket.IO                   | WebSocket                             |
+| DB                     | PostgreSQL 16 + Prisma ORM  |                                       |
+| 캐시/세션              | Redis 7 (ioredis)           | Rate Limit, 세션                      |
+| 인증                   | 전화번호 OTP + JWT          | Access 15분 / Refresh 30일            |
+| 파일 스토리지          | S3 호환 + Pre-signed URL    | 서버 직접 중계 없음                   |
+| 모노레포               | pnpm workspaces + Turborepo |                                       |
+| CI                     | GitHub Actions              | analyze + build                       |
 
 ---
 
@@ -41,7 +42,7 @@ ringtalk/
 │   │   │   ├── core/
 │   │   │   │   ├── constants/   (앱 상수, API 엔드포인트, WS 이벤트)
 │   │   │   │   ├── models/      (Auth, User, Chat, Api Dart 모델)
-│   │   │   │   ├── network/     (Dio HTTP + 자동 토큰 갱신)
+│   │   │   │   ├── network/     (Dio HTTP, Socket.IO + access token 인증)
 │   │   │   │   ├── router/      (go_router, 인증 리다이렉트)
 │   │   │   │   ├── storage/     (flutter_secure_storage)
 │   │   │   │   ├── theme/       (AppColors, AppColorsDark, AppTheme)
@@ -78,14 +79,14 @@ ringtalk/
 
 ### 사전 요구사항
 
-| 도구 | 버전 | 용도 |
-|------|------|------|
-| Node.js | >= 20 | 서버 런타임 |
-| pnpm | >= 9 | 패키지 매니저 |
-| Flutter SDK | >= 3.0 | 앱 개발 |
-| Docker | 최신 | PostgreSQL + Redis |
-| Android Studio | 최신 | Android 에뮬레이터 |
-| Xcode (macOS) | >= 15 | iOS / macOS 빌드 |
+| 도구           | 버전   | 용도               |
+| -------------- | ------ | ------------------ |
+| Node.js        | >= 20  | 서버 런타임        |
+| pnpm           | >= 9   | 패키지 매니저      |
+| Flutter SDK    | >= 3.0 | 앱 개발            |
+| Docker         | 최신   | PostgreSQL + Redis |
+| Android Studio | 최신   | Android 에뮬레이터 |
+| Xcode (macOS)  | >= 15  | iOS / macOS 빌드   |
 
 ```bash
 # pnpm 설치
@@ -158,34 +159,35 @@ flutter run -d windows     # Windows 네이티브
 
 ## 설치된 Flutter 패키지
 
-| 패키지 | 용도 |
-|--------|------|
-| `go_router` | 라우팅 (ShellRoute 탭 네비게이션) |
-| `flutter_riverpod` | 상태 관리 |
-| `dio` | HTTP 클라이언트 + 자동 토큰 갱신 |
-| `web_socket_channel` | WebSocket |
-| `socket_io_client` | Socket.IO 실시간 채팅 (3주차) |
-| `flutter_secure_storage` | 토큰·이용약관 동의 보안 저장 |
-| `reactive_forms` | 폼 유효성 검사 |
-| `cached_network_image` | 이미지 캐싱 |
-| `shimmer` | 스켈레톤 로딩 UI |
-| `uuid` | 클라이언트 임시 메시지 ID |
-| `crypto` | 전화번호 SHA-256 해시 |
-| `intl` | 날짜/시간 포맷 |
-| `flutter_contacts` | 기기 연락처 동기화 |
-| `permission_handler` | 권한 요청 (연락처/카메라/알림) |
-| `image_picker` | 이미지 첨부 (4주차) |
-| `file_picker` | 파일 첨부 (4주차) |
-| `flutter_dotenv` | 환경변수 (.env) |
-| `flutter_svg` | SVG 아이콘 |
-| `lottie` | 애니메이션 |
-| `flutter_slidable` | 채팅 아이템 스와이프 액션 |
+| 패키지                   | 용도                              |
+| ------------------------ | --------------------------------- |
+| `go_router`              | 라우팅 (ShellRoute 탭 네비게이션) |
+| `flutter_riverpod`       | 상태 관리                         |
+| `dio`                    | HTTP 클라이언트 + 자동 토큰 갱신  |
+| `web_socket_channel`     | WebSocket                         |
+| `socket_io_client`       | Socket.IO 실시간 채팅 (3주차)     |
+| `flutter_secure_storage` | 토큰·이용약관 동의 보안 저장      |
+| `reactive_forms`         | 폼 유효성 검사                    |
+| `cached_network_image`   | 이미지 캐싱                       |
+| `shimmer`                | 스켈레톤 로딩 UI                  |
+| `uuid`                   | 클라이언트 임시 메시지 ID         |
+| `crypto`                 | 전화번호 SHA-256 해시             |
+| `intl`                   | 날짜/시간 포맷                    |
+| `flutter_contacts`       | 기기 연락처 동기화                |
+| `permission_handler`     | 권한 요청 (연락처/카메라/알림)    |
+| `image_picker`           | 이미지 첨부 (4주차)               |
+| `file_picker`            | 파일 첨부 (4주차)                 |
+| `flutter_dotenv`         | 환경변수 (.env)                   |
+| `flutter_svg`            | SVG 아이콘                        |
+| `lottie`                 | 애니메이션                        |
+| `flutter_slidable`       | 채팅 아이템 스와이프 액션         |
 
 ## 네이티브 설정 (필수)
 
 > ⚠️ `permission_handler` 설치 후 **네이티브 설정 필수**:
 >
 > **Android** — `android/app/src/main/AndroidManifest.xml`:
+>
 > ```xml
 > <uses-permission android:name="android.permission.READ_CONTACTS"/>
 > <uses-permission android:name="android.permission.CAMERA"/>
@@ -194,6 +196,7 @@ flutter run -d windows     # Windows 네이티브
 > ```
 >
 > **iOS** — `ios/Runner/Info.plist`:
+>
 > ```xml
 > <key>NSContactsUsageDescription</key>
 > <string>친구를 찾기 위해 연락처 접근이 필요합니다.</string>
@@ -256,32 +259,32 @@ pnpm add multer @types/multer -D
 
 ## Contacts API
 
-| 메서드 | 엔드포인트 | 인증 | 설명 |
-|--------|-----------|------|------|
-| POST | `/api/v1/contacts/sync` | 🔒 | 연락처 해시 전송 → 친구 자동 등록 |
-| GET | `/api/v1/users/me/friends` | 🔒 | 수락된 친구 목록 (이름순, alias·phoneHash 포함) |
+| 메서드 | 엔드포인트                 | 인증 | 설명                                            |
+| ------ | -------------------------- | ---- | ----------------------------------------------- |
+| POST   | `/api/v1/contacts/sync`    | 🔒   | 연락처 해시 전송 → 친구 자동 등록               |
+| GET    | `/api/v1/users/me/friends` | 🔒   | 수락된 친구 목록 (이름순, alias·phoneHash 포함) |
 
 ---
 
 ## Chats API
 
-| 메서드 | 엔드포인트 | 인증 | 설명 |
-|--------|-----------|------|------|
-| GET | `/api/v1/chats` | 🔒 | 채팅 목록 (participants, lastMessage, unreadCount 포함) |
-| POST | `/api/v1/chats/direct` | 🔒 | 1:1 채팅방 생성 또는 기존 방 반환 (body: `{ participantId }`) |
+| 메서드 | 엔드포인트             | 인증 | 설명                                                          |
+| ------ | ---------------------- | ---- | ------------------------------------------------------------- |
+| GET    | `/api/v1/chats`        | 🔒   | 채팅 목록 (participants, lastMessage, unreadCount 포함)       |
+| POST   | `/api/v1/chats/direct` | 🔒   | 1:1 채팅방 생성 또는 기존 방 반환 (body: `{ participantId }`) |
 
 ---
 
 ## Auth API
 
-| 메서드 | 엔드포인트 | 인증 | 설명 |
-|--------|-----------|------|------|
-| POST | `/api/v1/auth/request-otp` | — | OTP 발송 |
-| POST | `/api/v1/auth/verify-otp` | — | OTP 검증 + 토큰 발급 |
-| POST | `/api/v1/auth/refresh` | — | 액세스 토큰 갱신 |
-| POST | `/api/v1/auth/logout` | 🔒 | 현재 기기 로그아웃 |
-| GET | `/api/v1/auth/sessions` | 🔒 | 로그인 기기 목록 |
-| DELETE | `/api/v1/auth/sessions/:id` | 🔒 | 특정 기기 강제 로그아웃 |
+| 메서드 | 엔드포인트                  | 인증 | 설명                    |
+| ------ | --------------------------- | ---- | ----------------------- |
+| POST   | `/api/v1/auth/request-otp`  | —    | OTP 발송                |
+| POST   | `/api/v1/auth/verify-otp`   | —    | OTP 검증 + 토큰 발급    |
+| POST   | `/api/v1/auth/refresh`      | —    | 액세스 토큰 갱신        |
+| POST   | `/api/v1/auth/logout`       | 🔒   | 현재 기기 로그아웃      |
+| GET    | `/api/v1/auth/sessions`     | 🔒   | 로그인 기기 목록        |
+| DELETE | `/api/v1/auth/sessions/:id` | 🔒   | 특정 기기 강제 로그아웃 |
 
 ---
 
@@ -340,6 +343,7 @@ PR / push → main, develop
 ### 3주차: 실시간 메시징 + ACK/읽음
 
 - [x] **Socket.IO 게이트웨이 + JWT 인증** — handshake 시 `auth.accessToken` 검증, 세션 확인
+- [x] **Flutter WS 인증** — SocketService, MainShell connect / SettingsScreen disconnect
 - [ ] `message.send` / `message.new` / `message.status` 이벤트
 - [ ] `client_message_id` 멱등성 보장
 - [ ] 읽음 처리 (`last_read_message_id`)
@@ -384,11 +388,13 @@ PR / push → main, develop
 ## IA (화면/메뉴 구조)
 
 **Auth Flow**
+
 ```
 Welcome → 전화번호 입력 → OTP 인증 → 프로필 설정 → 메인
 ```
 
 **메인 탭 (모바일)**
+
 ```
 채팅
   ├── 채팅 목록
@@ -403,6 +409,7 @@ Welcome → 전화번호 입력 → OTP 인증 → 프로필 설정 → 메인
 ```
 
 **PC 레이아웃**
+
 ```
 ┌──────────┬───────────────────────────────┐
 │ 사이드바  │           채팅방               │
@@ -418,16 +425,16 @@ Welcome → 전화번호 입력 → OTP 인증 → 프로필 설정 → 메인
 
 Prisma 스키마 파일: `apps/server/prisma/schema.prisma`
 
-| 테이블 | 설명 |
-|--------|------|
-| `users` | 유저 (전화번호 해시 저장) |
-| `user_sessions` | 디바이스별 로그인 세션 |
-| `otp_records` | OTP 발급 이력 |
-| `friends` | 친구 관계 (pending/accepted/blocked) |
-| `chat_rooms` | 채팅방 (direct/group) |
-| `room_participants` | 참여자 (마지막 읽음, 뮤트) |
-| `messages` | 메시지 (자기참조 답장, 소프트 삭제) |
-| `message_read_receipts` | 읽음 영수증 |
+| 테이블                  | 설명                                 |
+| ----------------------- | ------------------------------------ |
+| `users`                 | 유저 (전화번호 해시 저장)            |
+| `user_sessions`         | 디바이스별 로그인 세션               |
+| `otp_records`           | OTP 발급 이력                        |
+| `friends`               | 친구 관계 (pending/accepted/blocked) |
+| `chat_rooms`            | 채팅방 (direct/group)                |
+| `room_participants`     | 참여자 (마지막 읽음, 뮤트)           |
+| `messages`              | 메시지 (자기참조 답장, 소프트 삭제)  |
+| `message_read_receipts` | 읽음 영수증                          |
 
 ---
 
@@ -449,28 +456,33 @@ socket.on('authenticated', (data) => console.log('인증 완료:', data.userId))
 - 인증 성공 시 `authenticated` 이벤트 emit
 - 인증 실패 시 연결 거부
 
+**Flutter 클라이언트**
+- `SocketService` — access token으로 연결, `NetworkUrls.socketBase` 사용
+- MainShell 진입 시 `connect()`, 로그아웃 시 `disconnect()`
+- `socket_provider.dart` — Riverpod Provider
+
 ---
 
 ## WebSocket 이벤트
 
 ### 클라 → 서버
 
-| 이벤트 | 페이로드 | 설명 |
-|--------|---------|------|
-| (연결 시) | `auth: { accessToken }` | WS 인증 (handshake) |
-| `message.send` | `{ chatId, clientMessageId, text?, attachments? }` | 메시지 전송 |
-| `message.ack` | `{ messageId }` | 저장 완료 확인 |
-| `chat.read` | `{ chatId, lastReadMessageId }` | 읽음 처리 |
-| `presence.ping` | `{ ts }` | 온라인 유지 |
+| 이벤트          | 페이로드                                           | 설명                |
+| --------------- | -------------------------------------------------- | ------------------- |
+| (연결 시)       | `auth: { accessToken }`                            | WS 인증 (handshake) |
+| `message.send`  | `{ chatId, clientMessageId, text?, attachments? }` | 메시지 전송         |
+| `message.ack`   | `{ messageId }`                                    | 저장 완료 확인      |
+| `chat.read`     | `{ chatId, lastReadMessageId }`                    | 읽음 처리           |
+| `presence.ping` | `{ ts }`                                           | 온라인 유지         |
 
 ### 서버 → 클라
 
-| 이벤트 | 페이로드 | 설명 |
-|--------|---------|------|
-| `message.new` | `{ message }` | 새 메시지 |
-| `message.status` | `{ clientMessageId, status, messageId? }` | `sent/delivered/read` |
-| `chat.read_update` | `{ chatId, userId, lastReadMessageId }` | 읽음 동기화 |
-| `error` | `{ code, message }` | 오류 |
+| 이벤트             | 페이로드                                  | 설명                  |
+| ------------------ | ----------------------------------------- | --------------------- |
+| `message.new`      | `{ message }`                             | 새 메시지             |
+| `message.status`   | `{ clientMessageId, status, messageId? }` | `sent/delivered/read` |
+| `chat.read_update` | `{ chatId, userId, lastReadMessageId }`   | 읽음 동기화           |
+| `error`            | `{ code, message }`                       | 오류                  |
 
 > `clientMessageId(uuid)`로 멱등 처리 — 재전송해도 중복 저장 없음
 
