@@ -83,7 +83,7 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: () async => await _onChatTap(context, contact),
+                  onPressed: () async => await _onChatTap(contact),
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 22),
                   label: const Text('채팅하기'),
                   style: FilledButton.styleFrom(
@@ -104,7 +104,7 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _onBlockTap(context, contact),
+                  onPressed: () => _onBlockTap(contact),
                   icon: const Icon(Icons.block_rounded, size: 20),
                   label: const Text('차단하기'),
                   style: OutlinedButton.styleFrom(
@@ -124,7 +124,7 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
     );
   }
 
-  Future<void> _onChatTap(BuildContext context, RingTalkContact contact) async {
+  Future<void> _onChatTap(RingTalkContact contact) async {
     final profile = contact.profile;
     if (profile == null) return;
 
@@ -136,13 +136,14 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
       );
       return;
     }
+    if (!mounted) return;
     context.push(
       '/chats/${room.id}',
       extra: {'displayName': contact.displayName},
     );
   }
 
-  Future<void> _onBlockTap(BuildContext context, RingTalkContact contact) async {
+  Future<void> _onBlockTap(RingTalkContact contact) async {
     final profile = contact.profile;
     if (profile == null) return;
 
