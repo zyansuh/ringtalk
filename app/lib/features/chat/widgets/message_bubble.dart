@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/models/chat_model.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/date_utils.dart' as date_utils;
+import '../../../../core/utils/responsive.dart';
 
 /// 메시지 말풍선 위젯
 class MessageBubble extends StatelessWidget {
@@ -30,7 +31,7 @@ class MessageBubble extends StatelessWidget {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
+                maxWidth: bubbleMaxWidth(context),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
