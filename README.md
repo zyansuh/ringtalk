@@ -140,13 +140,15 @@ docker-compose up -d
 docker-compose ps
 ```
 
-### 3. 서버 환경변수 설정
+### 3. 환경변수 설정
+
+**서버**
 
 ```bash
 cp server/.env.example server/.env
 ```
 
-`.env`에서 반드시 수정할 항목:
+`server/.env`에서 반드시 수정할 항목:
 
 ```env
 JWT_SECRET=<랜덤 32자 이상 문자열>
@@ -154,6 +156,19 @@ JWT_REFRESH_SECRET=<다른 랜덤 32자 이상 문자열>
 DATABASE_URL="postgresql://ringtalk:password@localhost:5432/ringtalk_db"
 OTP_MOCK=true        # 개발 중 SMS 없이 콘솔에서 OTP 확인
 ```
+
+**Flutter 앱**
+
+```bash
+# app/.env 파일 생성 (flutter_dotenv가 pubspec.yaml assets에서 읽음)
+cat > app/.env << 'EOF'
+API_URL=http://localhost:3000/api/v1
+WS_URL=ws://localhost:3000
+OTP_MOCK=true
+EOF
+```
+
+> `app/.env`는 `.gitignore` 대상입니다. 실제 서버 주소로 변경해 사용하세요.
 
 ### 4. DB 마이그레이션 + 시드
 
@@ -211,7 +226,7 @@ flutter run -d windows     # Windows 네이티브
 
 > ⚠️ `permission_handler` 설치 후 **네이티브 설정 필수**:
 >
-> **Android** — `android/app/src/main/AndroidManifest.xml`:
+> **Android** — `app/android/app/src/main/AndroidManifest.xml`:
 >
 > ```xml
 > <uses-permission android:name="android.permission.READ_CONTACTS"/>
@@ -220,7 +235,7 @@ flutter run -d windows     # Windows 네이티브
 > <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 > ```
 >
-> **iOS** — `ios/Runner/Info.plist`:
+> **iOS** — `app/ios/Runner/Info.plist`:
 >
 > ```xml
 > <key>NSContactsUsageDescription</key>
@@ -319,14 +334,17 @@ pnpm add multer @types/multer -D
 PR / push → main, develop
     │
     ├── 🖥 server-check
-    │     pnpm install → tsc shared-server → tsc server
+    │     pnpm install → prisma generate → tsc shared → tsc server
     │
     ├── 🐦 flutter-check
-    │     flutter pub get → flutter analyze → flutter test
+    │     touch .env → flutter pub get → flutter analyze → flutter test
     │
     └── 🏗 flutter-build  (main push 시)
-          Android APK debug 빌드 → artifact 7일 보관
+          touch .env → local.properties 생성 → flutter pub get
+          → Android APK debug 빌드 → artifact 7일 보관
 ```
+
+> `local.properties`는 `.gitignore` 대상이므로 CI에서 Flutter/Android SDK 경로를 동적으로 생성합니다.
 
 ---
 
