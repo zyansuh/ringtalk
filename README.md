@@ -29,6 +29,33 @@
 
 ---
 
+## ⚠️ 명령어 실행 위치 (중요)
+
+**`messenger`는 모노레포 루트입니다.** `android/` 폴더가 루트에 없습니다.
+
+| 목적 | 올바른 경로 | 잘못된 예 |
+|------|-------------|-----------|
+| Android (gradlew) | `apps/app/android/` | ~~`android/`~~ (없음) |
+| Flutter 앱 | `apps/app/` | ~~루트~~ |
+| NestJS 서버 | `apps/server/` | ~~루트~~ |
+
+```bash
+# ❌ 잘못됨 (루트에서)
+cd android          # → cd: no such file or directory
+./gradlew clean    # → zsh: no such file or directory
+
+# ✅ 올바름
+cd apps/app/android
+./gradlew clean
+
+# 또는 루트에서 한 줄로
+cd apps/app/android && ./gradlew clean
+```
+
+루트 `package.json`에 편의 스크립트가 있습니다: `pnpm app:android:clean`, `pnpm app:android:build` 등.
+
+---
+
 ## 디렉토리 구조
 
 ```
@@ -344,8 +371,8 @@ PR / push → main, develop
 
 - [x] **Socket.IO 게이트웨이 + JWT 인증** — handshake 시 `auth.accessToken` 검증, 세션 확인
 - [x] **Flutter WS 인증** — SocketService, MainShell connect / SettingsScreen disconnect
-- [ ] `message.send` / `message.new` / `message.status` 이벤트
-- [ ] `client_message_id` 멱등성 보장
+- [x] **`message:send` / `message:new` / `message:status` 이벤트** — DB 저장, room 브로드캐스트, 낙관적 업데이트
+- [x] **`clientMessageId` 낙관적 업데이트** — message:new에 clientMessageId 포함, 발신자 중복 방지
 - [ ] 읽음 처리 (`last_read_message_id`)
 - [ ] 전송 실패 재시도 UX
 
@@ -470,21 +497,23 @@ socket.on('authenticated', (data) => console.log('인증 완료:', data.userId))
 | 이벤트          | 페이로드                                           | 설명                |
 | --------------- | -------------------------------------------------- | ------------------- |
 | (연결 시)       | `auth: { accessToken }`                            | WS 인증 (handshake) |
-| `message.send`  | `{ chatId, clientMessageId, text?, attachments? }` | 메시지 전송         |
-| `message.ack`   | `{ messageId }`                                    | 저장 완료 확인      |
+| `room:join`     | `{ roomId }`                                       | 채팅방 입장         |
+| `room:leave`    | `{ roomId }`                                       | 채팅방 퇴장         |
+| `message:send`  | `{ roomId, clientMessageId, content, type? }`      | 메시지 전송         |
 | `chat.read`     | `{ chatId, lastReadMessageId }`                    | 읽음 처리           |
 | `presence.ping` | `{ ts }`                                           | 온라인 유지         |
 
 ### 서버 → 클라
 
-| 이벤트             | 페이로드                                  | 설명                  |
-| ------------------ | ----------------------------------------- | --------------------- |
-| `message.new`      | `{ message }`                             | 새 메시지             |
-| `message.status`   | `{ clientMessageId, status, messageId? }` | `sent/delivered/read` |
-| `chat.read_update` | `{ chatId, userId, lastReadMessageId }`   | 읽음 동기화           |
-| `error`            | `{ code, message }`                       | 오류                  |
+| 이벤트             | 페이로드                                                     | 설명                  |
+| ------------------ | ------------------------------------------------------------ | --------------------- |
+| `authenticated`    | `{ userId }`                                                 | 인증 완료             |
+| `message:new`      | `{ message, clientMessageId? }`                              | 새 메시지 (room 전체 브로드캐스트) |
+| `message:status`   | `{ clientMessageId, status, messageId }`                      | `sent` (발신자에게만) |
+| `chat.read_update` | `{ chatId, userId, lastReadMessageId }`                       | 읽음 동기화           |
+| `error`            | `{ code, message }`                                          | 오류                  |
 
-> `clientMessageId(uuid)`로 멱등 처리 — 재전송해도 중복 저장 없음
+> `clientMessageId(uuid)` — 낙관적 업데이트용. `message:new`에 포함되어 발신자 중복 방지.
 
 ---
 
