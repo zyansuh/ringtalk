@@ -1,12 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "paths": {
-      "@ringtalk/shared-server": ["../../packages/shared-server/src"]
+      "@ringtalk/shared-server": ["../shared/src"]
     }
   },
   "include": ["src", "prisma"],
