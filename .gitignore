@@ -35,7 +35,6 @@ Thumbs.db
 # Expo / React Native
 .expo
 ios/
-android/
 *.jks
 *.keystore
 
