@@ -60,15 +60,14 @@ lib/features/chat/
 ├── providers/
 │   ├── chat_room_provider.dart    # ChatRoomNotifier (메시지 상태, WS 구독)
 │   └── rooms_provider.dart        # 채팅 목록
-└── presentation/
-    ├── screens/
-    │   ├── chat_list_screen.dart
-    │   └── chat_room_screen.dart
-    └── widgets/
-        ├── chat_input_bar.dart    # 입력창
-        ├── chat_room_tile.dart    # 목록 타일
-        ├── date_divider.dart      # 날짜 구분선
-        └── message_bubble.dart    # 메시지 말풍선
+├── screens/
+│   ├── chat_list_screen.dart
+│   └── chat_room_screen.dart
+└── widgets/
+    ├── chat_input_bar.dart    # 입력창
+    ├── chat_room_tile.dart    # 목록 타일
+    ├── date_divider.dart      # 날짜 구분선
+    └── message_bubble.dart    # 메시지 말풍선
 ```
 
 ### ChatRoomProvider
@@ -105,7 +104,7 @@ lib/features/chat/
 
 ## 상수 (WsEvents)
 
-`apps/app/lib/core/constants/app_constants.dart`:
+`app/lib/core/constants/app_constants.dart`:
 
 ```dart
 abstract class WsEvents {
