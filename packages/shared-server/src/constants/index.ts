@@ -135,6 +135,7 @@ export const WsEvents = {
   MESSAGE_SEND: 'message:send',
   MESSAGE_NEW: 'message:new',
   MESSAGE_STATUS: 'message:status',
+  MESSAGE_DELIVERED: 'message:delivered',
   MESSAGE_DELETE: 'message:delete',
   MESSAGE_DELETED: 'message:deleted',
 

@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { WebSocketModule } from './websocket/websocket.module';
+import { MessagesModule } from './messages/messages.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { RedisModule } from './common/redis/redis.module';
 
@@ -42,6 +43,7 @@ import { RedisModule } from './common/redis/redis.module';
     UsersModule,
     ContactsModule,
     RoomsModule,
+    MessagesModule,
     WebSocketModule,
   ],
 })

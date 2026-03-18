@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { WebSocketGatewayService } from './websocket.gateway';
+import { MessagesModule } from '../messages/messages.module';
 import { PrismaModule } from '../common/prisma/prisma.module';
 
 @Module({
   imports: [
     PrismaModule,
+    MessagesModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

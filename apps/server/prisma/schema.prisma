@@ -170,17 +170,18 @@ enum ParticipantRole {
 // ─────────────────────────────────────────
 
 model Message {
-  id          String      @id @default(uuid())
-  roomId      String
-  senderId    String
-  type        MessageType @default(text)
-  content     String
-  mediaUrl    String?
-  replyToId   String?
-  isDeleted   Boolean     @default(false)
-  deletedFor  DeleteScope @default(none)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id              String       @id @default(uuid())
+  roomId          String
+  senderId        String
+  clientMessageId String?
+  type            MessageType  @default(text)
+  content         String
+  mediaUrl        String?
+  replyToId       String?
+  isDeleted       Boolean      @default(false)
+  deletedFor      DeleteScope  @default(none)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   room        ChatRoom    @relation(fields: [roomId], references: [id], onDelete: Cascade)
   sender      User        @relation(fields: [senderId], references: [id])
@@ -188,6 +189,7 @@ model Message {
   replies     Message[]   @relation("MessageReplies")
   readReceipts MessageReadReceipt[]
 
+  @@unique([roomId, senderId, clientMessageId])
   @@index([roomId, createdAt])
   @@index([senderId])
   @@map("messages")

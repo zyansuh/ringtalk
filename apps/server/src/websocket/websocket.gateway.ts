@@ -1,6 +1,9 @@
 import {
   WebSocketGateway,
   WebSocketServer,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -10,12 +13,15 @@ import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { MessagesService } from '../messages/messages.service';
 import { JwtPayload } from '../common/decorators/current-user.decorator';
 import { WsEvents } from '@ringtalk/shared-server';
 
 export interface AuthenticatedSocket extends Socket {
   data: Socket['data'] & { user?: JwtPayload };
 }
+
+const ROOM_PREFIX = 'room:';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -33,6 +39,7 @@ export class WebSocketGatewayService
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly messages: MessagesService,
   ) {}
 
   afterInit(server: Server) {
@@ -78,6 +85,7 @@ export class WebSocketGatewayService
   handleConnection(client: AuthenticatedSocket) {
     const user = client.data.user;
     if (user) {
+      client.join(`user:${user.sub}`);
       this.logger.log(`WS 연결: userId=${user.sub} socket=${client.id}`);
       client.emit(WsEvents.AUTHENTICATED, { userId: user.sub });
     }
@@ -88,5 +96,124 @@ export class WebSocketGatewayService
     if (user) {
       this.logger.log(`WS 연결 해제: userId=${user.sub} socket=${client.id}`);
     }
+  }
+
+  @SubscribeMessage(WsEvents.ROOM_JOIN)
+  async handleRoomJoin(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const user = client.data.user;
+    if (!user) return;
+
+    const { roomId } = data;
+    if (!roomId) return;
+
+    const participation = await this.prisma.roomParticipant.findFirst({
+      where: { roomId, userId: user.sub, leftAt: null },
+    });
+    if (!participation) return;
+
+    client.join(ROOM_PREFIX + roomId);
+    this.logger.debug(`room:join userId=${user.sub} roomId=${roomId}`);
+  }
+
+  @SubscribeMessage(WsEvents.ROOM_LEAVE)
+  handleRoomLeave(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const { roomId } = data;
+    if (roomId) client.leave(ROOM_PREFIX + roomId);
+  }
+
+  @SubscribeMessage(WsEvents.MESSAGE_SEND)
+  async handleMessageSend(
+    @MessageBody()
+    data: {
+      roomId?: string;
+      chatId?: string;
+      clientMessageId: string;
+      content?: string;
+      text?: string;
+      type?: string;
+      mediaUrl?: string;
+      replyToId?: string;
+    },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const user = client.data.user;
+    if (!user) {
+      client.emit('error', { code: 'UNAUTHORIZED', message: '인증이 필요합니다.' });
+      return;
+    }
+
+    const roomId = data.roomId ?? data.chatId;
+    const content = data.content ?? data.text ?? '';
+
+    if (!roomId || !data.clientMessageId) {
+      client.emit('error', {
+        code: 'VALIDATION_ERROR',
+        message: 'roomId, clientMessageId는 필수입니다.',
+      });
+      return;
+    }
+
+    try {
+      const result = await this.messages.sendMessage(user.sub, {
+        roomId,
+        clientMessageId: data.clientMessageId,
+        type: (data.type as any) ?? 'text',
+        content,
+        mediaUrl: data.mediaUrl,
+        replyToId: data.replyToId,
+      });
+
+      const roomKey = ROOM_PREFIX + roomId;
+      this.server.to(roomKey).emit(WsEvents.MESSAGE_NEW, {
+        message: result.message,
+        clientMessageId: data.clientMessageId,
+      });
+
+      client.emit(WsEvents.MESSAGE_STATUS, {
+        clientMessageId: data.clientMessageId,
+        status: 'sent',
+        messageId: result.message.id,
+      });
+    } catch (err: any) {
+      this.logger.warn(`message:send 실패: ${err?.message}`);
+      client.emit('error', {
+        code: err?.response?.code ?? 'INTERNAL_ERROR',
+        message: err?.response?.message ?? '메시지 전송에 실패했습니다.',
+      });
+    }
+  }
+
+  @SubscribeMessage(WsEvents.MESSAGE_DELIVERED)
+  async handleMessageDelivered(
+    @MessageBody() data: { messageId: string; roomId: string },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const user = client.data.user;
+    if (!user) return;
+
+    const { messageId, roomId } = data;
+    if (!messageId || !roomId) return;
+
+    const participation = await this.prisma.roomParticipant.findFirst({
+      where: { roomId, userId: user.sub, leftAt: null },
+    });
+    if (!participation) return;
+
+    const message = await this.prisma.message.findFirst({
+      where: { id: messageId, roomId },
+    });
+    if (!message || message.senderId === user.sub) return;
+
+    this.server.to(`user:${message.senderId}`).emit(WsEvents.MESSAGE_STATUS, {
+      messageId,
+      status: 'delivered',
+      deliveredTo: user.sub,
+    });
   }
 }
