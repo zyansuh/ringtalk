@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/chat_model.dart';
 import '../../../core/storage/auth_storage.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../providers/chat_room_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/date_divider.dart';
@@ -77,16 +78,21 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _buildBody(state, myUserId),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Responsive.chatRoomMaxWidth),
+          child: Column(
+            children: [
+              Expanded(
+                child: _buildBody(state, myUserId),
+              ),
+              ChatInputBar(
+                onSend: _send,
+                enabled: _myUserId != null,
+              ),
+            ],
           ),
-          ChatInputBar(
-            onSend: _send,
-            enabled: _myUserId != null,
-          ),
-        ],
+        ),
       ),
     );
   }

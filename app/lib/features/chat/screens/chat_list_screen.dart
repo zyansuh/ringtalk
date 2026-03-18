@@ -5,12 +5,17 @@ import 'package:go_router/go_router.dart';
 import '../../../core/models/chat_model.dart';
 import '../../../core/storage/auth_storage.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../providers/rooms_provider.dart';
 import '../widgets/chat_room_tile.dart';
 import '../widgets/empty_chats_view.dart';
 
 class ChatListScreen extends ConsumerStatefulWidget {
-  const ChatListScreen({super.key});
+  /// 데스크톱 2-패널 모드에서 채팅방 선택 시 호출됩니다.
+  /// null이면 모바일 모드로 동작 (context.push 사용).
+  final void Function(String roomId, String? displayName)? onRoomSelected;
+
+  const ChatListScreen({super.key, this.onRoomSelected});
 
   @override
   ConsumerState<ChatListScreen> createState() => _ChatListScreenState();
@@ -30,10 +35,16 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   }
 
   void _onRoomTap(String roomId, String? displayName) {
-    context.push(
-      '/chats/$roomId',
-      extra: displayName != null ? {'displayName': displayName} : null,
-    );
+    if (widget.onRoomSelected != null) {
+      // 데스크톱 2-패널 모드
+      widget.onRoomSelected!(roomId, displayName);
+    } else {
+      // 모바일: 라우터 push
+      context.push(
+        '/chats/$roomId',
+        extra: displayName != null ? {'displayName': displayName} : null,
+      );
+    }
   }
 
   @override
@@ -52,7 +63,12 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           ),
         ],
       ),
-      body: _buildBody(context, state, rooms),
+      body: ResponsiveCenter(
+        maxWidth: widget.onRoomSelected != null
+            ? double.infinity // 2-패널 모드에서는 제한 없음
+            : Responsive.chatRoomMaxWidth,
+        child: _buildBody(context, state, rooms),
+      ),
     );
   }
 
