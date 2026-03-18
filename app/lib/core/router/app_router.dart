@@ -1,15 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/presentation/screens/welcome_screen.dart';
-import '../../features/auth/presentation/screens/phone_screen.dart';
-import '../../features/auth/presentation/screens/otp_screen.dart';
-import '../../features/auth/presentation/screens/profile_setup_screen.dart';
-import '../../features/chat/presentation/screens/chat_list_screen.dart';
-import '../../features/chat/presentation/screens/chat_room_screen.dart';
-import '../../features/friends/presentation/screens/friend_profile_screen.dart';
-import '../../features/friends/presentation/screens/friends_screen.dart';
-import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/auth/screens/welcome_screen.dart';
+import '../../features/auth/screens/phone_screen.dart';
+import '../../features/auth/screens/otp_screen.dart';
+import '../../features/auth/screens/profile_setup_screen.dart';
+import '../../features/chat/screens/chat_list_screen.dart';
+import '../../features/chat/screens/chat_room_screen.dart';
+import '../../features/friends/screens/friend_profile_screen.dart';
+import '../../features/friends/screens/friends_screen.dart';
+import '../../features/settings/screens/settings_screen.dart';
 import '../models/contact_model.dart';
 import '../storage/auth_storage.dart';
 import '../../shared/widgets/main_shell.dart';

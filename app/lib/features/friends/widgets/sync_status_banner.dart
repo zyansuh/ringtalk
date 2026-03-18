@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/models/contact_model.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../providers/friends_provider.dart';
+import '../../../core/models/contact_model.dart';
+import '../../../core/theme/app_colors.dart';
+import '../providers/friends_provider.dart';
 
 /// 연락처 동기화 상태 배너
 class SyncStatusBanner extends StatelessWidget {

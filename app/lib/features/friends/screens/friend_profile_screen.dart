@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/models/contact_model.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../chat/providers/rooms_provider.dart';
-import '../../providers/friends_provider.dart';
+import '../../../core/models/contact_model.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../chat/providers/rooms_provider.dart';
+import '../providers/friends_provider.dart';
 
 /// 친구 프로필 화면
 class FriendProfileScreen extends ConsumerStatefulWidget {

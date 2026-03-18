@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/models/chat_model.dart';
-import '../../../../core/storage/auth_storage.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../providers/chat_room_provider.dart';
+import '../../../core/models/chat_model.dart';
+import '../../../core/storage/auth_storage.dart';
+import '../../../core/theme/app_colors.dart';
+import '../providers/chat_room_provider.dart';
 import '../widgets/chat_input_bar.dart';
 import '../widgets/date_divider.dart';
 import '../widgets/message_bubble.dart';

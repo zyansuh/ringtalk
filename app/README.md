@@ -25,9 +25,15 @@ lib/
 │   └── utils/            # date_utils, phone_utils
 ├── features/
 │   ├── auth/             # 로그인 (OTP, 프로필 설정)
-│   ├── chat/              # 채팅 목록, 채팅방
-│   ├── contacts/          # 연락처 동기화
-│   ├── friends/           # 친구 목록
+│   │   ├── screens/
+│   │   └── widgets/
+│   ├── chat/             # 채팅 목록, 채팅방
+│   │   ├── data/
+│   │   ├── providers/
+│   │   ├── screens/
+│   │   └── widgets/
+│   ├── contacts/         # 연락처 동기화
+│   ├── friends/          # 친구 목록
 │   └── settings/         # 설정, 로그아웃
 └── shared/                # MainShell (탭 네비게이션)
 ```
@@ -47,7 +53,7 @@ lib/
 pnpm app
 
 # 또는
-cd apps/app && flutter run
+cd app && flutter run
 ```
 
 ### 플랫폼별

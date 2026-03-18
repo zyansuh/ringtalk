@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/models/chat_model.dart';
-import '../../../../core/storage/auth_storage.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../providers/rooms_provider.dart';
+import '../../../core/models/chat_model.dart';
+import '../../../core/storage/auth_storage.dart';
+import '../../../core/theme/app_colors.dart';
+import '../providers/rooms_provider.dart';
 import '../widgets/chat_room_tile.dart';
 import '../widgets/empty_chats_view.dart';
 
