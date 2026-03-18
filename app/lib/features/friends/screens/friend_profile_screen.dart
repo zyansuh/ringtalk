@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/models/contact_model.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../../chat/providers/rooms_provider.dart';
 import '../providers/friends_provider.dart';
 
@@ -40,7 +41,10 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Responsive.contentMaxWidth),
+          child: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 24),
@@ -120,6 +124,8 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
             ),
           ],
         ),
+          ),
+        ),
       ),
     );
   }
@@ -168,16 +174,17 @@ class _FriendProfileScreenState extends ConsumerState<FriendProfileScreen> {
       ),
     );
 
-    if (confirmed != true || !context.mounted) return;
+    if (confirmed != true || !mounted) return;
 
+    final messenger = ScaffoldMessenger.of(context);
     try {
       await ref.read(friendsRepositoryProvider).blockUser(profile.id);
-      if (!context.mounted) return;
+      if (!mounted) return;
       context.pop();
       ref.read(friendsProvider.notifier).fetchFriends();
     } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      messenger.showSnackBar(
         SnackBar(content: Text('차단 처리 중 오류가 발생했어요: $e')),
       );
     }

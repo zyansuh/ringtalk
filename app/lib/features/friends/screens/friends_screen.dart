@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/models/contact_model.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../../chat/providers/rooms_provider.dart';
 import '../providers/friends_provider.dart';
 import '../widgets/empty_friends_view.dart';
@@ -77,14 +78,19 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (state.syncStatus != ContactSyncStatus.idle)
-            SyncStatusBanner(state: state),
-          Expanded(
-            child: _buildBody(state),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Responsive.contentMaxWidth),
+          child: Column(
+            children: [
+              if (state.syncStatus != ContactSyncStatus.idle)
+                SyncStatusBanner(state: state),
+              Expanded(
+                child: _buildBody(state),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
