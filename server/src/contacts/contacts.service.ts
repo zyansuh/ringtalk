@@ -34,7 +34,7 @@ export class ContactsService {
     // 매칭된 유저마다 친구 관계 upsert (이미 친구면 유지, 없으면 생성)
     if (matchedUsers.length > 0) {
       await this.prisma.$transaction(
-        matchedUsers.map((user) =>
+        matchedUsers.map((user: (typeof matchedUsers)[number]) =>
           this.prisma.friend.upsert({
             where: {
               userId_friendId: { userId, friendId: user.id },

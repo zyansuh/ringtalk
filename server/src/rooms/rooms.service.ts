@@ -52,7 +52,7 @@ export class RoomsService {
       orderBy: { room: { updatedAt: 'desc' } },
     });
 
-    return participations.map((p) => {
+    return participations.map((p: (typeof participations)[number]) => {
       const room = p.room;
       const lastMessage = room.messages[0] ?? null;
       const lastReadAt = p.lastReadAt;
@@ -72,7 +72,7 @@ export class RoomsService {
         type: room.type,
         name: room.name,
         profileImageUrl: room.profileImageUrl,
-        participants: room.participants.map((rp) => ({
+        participants: room.participants.map((rp: (typeof room.participants)[number]) => ({
           userId: rp.userId,
           role: rp.role,
           joinedAt: rp.joinedAt,
@@ -154,9 +154,9 @@ export class RoomsService {
     });
 
     const room = directRooms.find(
-      (r) =>
+      (r: (typeof directRooms)[number]) =>
         r.participants.length === 2 &&
-        r.participants.some((p) => p.userId === participantId),
+        r.participants.some((p: (typeof r.participants)[number]) => p.userId === participantId),
     );
 
     if (room) {

@@ -67,7 +67,7 @@ export class UsersService {
       orderBy: [{ friend: { displayName: 'asc' } }],
     });
 
-    return friends.map((f) => ({
+    return friends.map((f: (typeof friends)[number]) => ({
       ...f.friend,
       displayName: f.alias ?? f.friend.displayName,
       alias: f.alias,

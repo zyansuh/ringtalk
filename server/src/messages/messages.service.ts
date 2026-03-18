@@ -143,7 +143,7 @@ export class MessagesService {
     const items = hasMore ? messages.slice(0, limit) : messages;
 
     return {
-      messages: items.map((m) => this._formatMessage(m)),
+      messages: items.map((m: (typeof items)[number]) => this._formatMessage(m)),
       nextCursor: hasMore ? items[items.length - 1].id : null,
     };
   }
