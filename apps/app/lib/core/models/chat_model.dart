@@ -141,10 +141,16 @@ class Message {
         deletedFor: DeleteScope.values.byName(json['deletedFor'] as String? ?? 'none'),
         createdAt: DateTime.parse(json['createdAt'] as String),
         updatedAt: DateTime.parse(json['updatedAt'] as String),
+        clientTempId: json['clientTempId'] as String?,
       );
 
-  Message copyWith({MessageStatus? status}) => Message(
-        id: id,
+  Message copyWith({
+    String? id,
+    MessageStatus? status,
+    String? clientTempId,
+  }) =>
+      Message(
+        id: id ?? this.id,
         roomId: roomId,
         senderId: senderId,
         type: type,
@@ -157,7 +163,7 @@ class Message {
         deletedFor: deletedFor,
         createdAt: createdAt,
         updatedAt: updatedAt,
-        clientTempId: clientTempId,
+        clientTempId: clientTempId ?? this.clientTempId,
       );
 }
 

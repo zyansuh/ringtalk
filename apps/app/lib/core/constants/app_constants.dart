@@ -52,9 +52,10 @@ abstract class ApiEndpoints {
   static String sendMessage(String id) => '/rooms/$id/messages';
   static String readMessage(String id) => '/rooms/$id/read';
 
-  // 채팅 (목록, 1:1 생성)
+  // 채팅 (목록, 1:1 생성, 메시지)
   static const chats = '/chats';
   static const chatsDirect = '/chats/direct';
+  static String chatMessages(String id) => '/chats/$id/messages';
 
   // 미디어
   static const mediaUpload = '/media/upload';
@@ -85,6 +86,7 @@ abstract class WsEvents {
   static const messageSend = 'message:send';
   static const messageNew = 'message:new';
   static const messageStatus = 'message:status';
+  static const messageDelivered = 'message:delivered';
   static const messageDelete = 'message:delete';
   static const messageDeleted = 'message:deleted';
 
