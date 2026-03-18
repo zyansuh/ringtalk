@@ -29,8 +29,6 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -71,16 +69,20 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Create .env placeholder
+        working-directory: app
+        run: touch .env
+
       - name: Get Flutter dependencies
-        working-directory: apps/app
+        working-directory: app
         run: flutter pub get
 
       - name: Flutter analyze
-        working-directory: apps/app
+        working-directory: app
         run: flutter analyze --no-fatal-infos
 
       - name: Flutter test
-        working-directory: apps/app
+        working-directory: app
         run: flutter test
 
   # ─────────────────────────────────────────────────────────────
@@ -110,17 +112,21 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Create .env placeholder
+        working-directory: app
+        run: touch .env
+
       - name: Get Flutter dependencies
-        working-directory: apps/app
+        working-directory: app
         run: flutter pub get
 
       - name: Build Android APK (debug)
-        working-directory: apps/app
+        working-directory: app
         run: flutter build apk --debug --no-pub
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: ringtalk-debug-${{ github.sha }}
-          path: apps/app/build/app/outputs/flutter-apk/app-debug.apk
+          path: app/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 7
