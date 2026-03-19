@@ -9,6 +9,7 @@ import '../../../../core/models/models.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../../core/utils/utils.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -169,86 +170,91 @@ class _OtpScreenState extends State<OtpScreen> {
       backgroundColor: AppColors.bgDefault,
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, leading: const BackButton()),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text('인증번호 입력', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              RichText(
-                text: TextSpan(
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-                  children: [
-                    TextSpan(
-                      text: _maskPhone(widget.phone),
-                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
-                    ),
-                    const TextSpan(text: '\n으로 발송된 6자리 인증번호를 입력하세요.'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(
-                  _otpLength,
-                  (i) => _OtpBox(
-                    controller: _controllers[i],
-                    focusNode: _focusNodes[i],
-                    onChanged: (v) => _onDigitChange(v, i),
-                    onKeyEvent: (e) => _onKeyEvent(e, i),
-                    enabled: !_isLoading,
-                    autoFocus: i == 0,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Responsive.authMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _timeLeft > 0
-                      ? RichText(
-                          text: TextSpan(
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(color: AppColors.textSecondary),
-                            children: [
-                              const TextSpan(text: '남은 시간: '),
-                              TextSpan(
-                                text: _formatTime(_timeLeft),
-                                style: const TextStyle(
-                                    color: AppColors.primary, fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
-                        )
-                      : const Text('인증번호가 만료되었습니다.',
-                          style: TextStyle(color: AppColors.error, fontSize: 13)),
-                  TextButton(
-                    onPressed: _timeLeft <= 150 ? _resend : null,
-                    style: TextButton.styleFrom(
-                      side: BorderSide(
-                        color: _timeLeft <= 150 ? AppColors.primary : AppColors.borderDefault,
-                      ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  const SizedBox(height: 8),
+                  Text('인증번호 입력', style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: 8),
+                  RichText(
+                    text: TextSpan(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                      children: [
+                        TextSpan(
+                          text: _maskPhone(widget.phone),
+                          style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+                        ),
+                        const TextSpan(text: '\n으로 발송된 6자리 인증번호를 입력하세요.'),
+                      ],
                     ),
-                    child: const Text('재발송'),
                   ),
+                  const SizedBox(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      _otpLength,
+                      (i) => _OtpBox(
+                        controller: _controllers[i],
+                        focusNode: _focusNodes[i],
+                        onChanged: (v) => _onDigitChange(v, i),
+                        onKeyEvent: (e) => _onKeyEvent(e, i),
+                        enabled: !_isLoading,
+                        autoFocus: i == 0,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _timeLeft > 0
+                          ? RichText(
+                              text: TextSpan(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.textSecondary),
+                                children: [
+                                  const TextSpan(text: '남은 시간: '),
+                                  TextSpan(
+                                    text: _formatTime(_timeLeft),
+                                    style: const TextStyle(
+                                        color: AppColors.primary, fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : const Text('인증번호가 만료되었습니다.',
+                              style: TextStyle(color: AppColors.error, fontSize: 13)),
+                      TextButton(
+                        onPressed: _timeLeft <= 150 ? _resend : null,
+                        style: TextButton.styleFrom(
+                          side: BorderSide(
+                            color: _timeLeft <= 150 ? AppColors.primary : AppColors.borderDefault,
+                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        ),
+                        child: const Text('재발송'),
+                      ),
+                    ],
+                  ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 8),
+                    Text(_error!, style: const TextStyle(color: AppColors.error, fontSize: 12)),
+                  ],
+                  if (_isLoading) ...[
+                    const SizedBox(height: 16),
+                    const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                  ],
                 ],
               ),
-              if (_error != null) ...[
-                const SizedBox(height: 8),
-                Text(_error!, style: const TextStyle(color: AppColors.error, fontSize: 12)),
-              ],
-              if (_isLoading) ...[
-                const SizedBox(height: 16),
-                const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-              ],
-            ],
+            ),
           ),
         ),
       ),
@@ -287,12 +293,18 @@ class _OtpBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // OTP 박스 너비: 화면 너비 기반 비율 계산 (최소 40, 최대 56)
+    final screenW = MediaQuery.sizeOf(context).width;
+    final availableW = (screenW.clamp(0, Responsive.authMaxWidth) - 48); // horizontal padding 24*2
+    final boxW = (availableW / 6 - 4).clamp(40.0, 56.0); // 6칸, gap 4
+    final boxH = boxW * 1.2;
+
     return KeyboardListener(
       focusNode: FocusNode(),
       onKeyEvent: onKeyEvent,
       child: SizedBox(
-        width: 46,
-        height: 56,
+        width: boxW,
+        height: boxH,
         child: TextField(
           controller: controller,
           focusNode: focusNode,

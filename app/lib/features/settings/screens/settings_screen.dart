@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/network/socket_provider.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/responsive.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -36,7 +37,10 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.surfaceSubtle,
       appBar: AppBar(title: const Text('설정')),
-      body: ListView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Responsive.contentMaxWidth),
+          child: ListView(
         children: [
           // 프로필 카드
           Container(
@@ -96,6 +100,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 32),
         ],
+          ),
+        ),
       ),
     );
   }

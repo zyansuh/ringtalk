@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/storage/auth_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/responsive.dart';
 import '../widgets/terms_modal.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -36,84 +37,89 @@ class WelcomeScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                const Spacer(flex: 3),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: Responsive.authMaxWidth),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    const Spacer(flex: 3),
 
-                // ─── 로고 (RingTalk 종+텍스트) ─────────────────────────
-                Image.asset(
-                  'assets/images/app_logo.png',
-                  height: 88,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.notifications_rounded,
-                    color: Colors.white,
-                    size: 54,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // ─── 앱 이름 ──────────────────────────────────────────
-                Text(
-                  '링톡',
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 44,
-                        letterSpacing: -0.5,
+                    // ─── 로고 ─────────────────────────────────────────
+                    Image.asset(
+                      'assets/images/app_logo.png',
+                      height: 88,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.notifications_rounded,
+                        color: Colors.white,
+                        size: 54,
                       ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "마음이 '링'하는 순간, 링톡",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // ─── 앱 이름 ──────────────────────────────────────
+                    Text(
+                      '링톡',
+                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 44,
+                            letterSpacing: -0.5,
+                          ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "마음이 '링'하는 순간, 링톡",
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                    ),
+
+                    const Spacer(flex: 4),
+
+                    // ─── 시작 버튼 ────────────────────────────────────
+                    _StartButton(onPressed: () => _onStart(context)),
+
+                    const SizedBox(height: 16),
+
+                    // ─── 약관 안내 텍스트 ──────────────────────────────
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textDisabled,
+                              height: 1.5,
+                            ),
+                        children: const [
+                          TextSpan(text: '시작하면 '),
+                          TextSpan(
+                            text: '서비스 이용약관',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.textSecondary,
+                            ),
+                          ),
+                          TextSpan(text: ' 및 '),
+                          TextSpan(
+                            text: '개인정보 처리방침',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.textSecondary,
+                            ),
+                          ),
+                          TextSpan(text: '\n에 동의하는 것으로 간주됩니다.'),
+                        ],
                       ),
+                    ),
+
+                    const SizedBox(height: 36),
+                  ],
                 ),
-
-                const Spacer(flex: 4),
-
-                // ─── 시작 버튼 ────────────────────────────────────────
-                _StartButton(onPressed: () => _onStart(context)),
-
-                const SizedBox(height: 16),
-
-                // ─── 약관 안내 텍스트 ──────────────────────────────────
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textDisabled,
-                          height: 1.5,
-                        ),
-                    children: const [
-                      TextSpan(text: '시작하면 '),
-                      TextSpan(
-                        text: '서비스 이용약관',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.textSecondary,
-                        ),
-                      ),
-                      TextSpan(text: ' 및 '),
-                      TextSpan(
-                        text: '개인정보 처리방침',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          decoration: TextDecoration.underline,
-                          decorationColor: AppColors.textSecondary,
-                        ),
-                      ),
-                      TextSpan(text: '\n에 동의하는 것으로 간주됩니다.'),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 36),
-              ],
+              ),
             ),
           ),
         ),

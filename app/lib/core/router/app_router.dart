@@ -12,6 +12,8 @@ import '../../features/friends/screens/friends_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../models/contact_model.dart';
 import '../storage/auth_storage.dart';
+import '../utils/responsive.dart';
+import '../../shared/widgets/desktop_chat_layout.dart';
 import '../../shared/widgets/main_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -50,7 +52,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (_, __, child) => MainShell(child: child),
         routes: [
-          GoRoute(path: '/chats', builder: (_, __) => const ChatListScreen()),
+          GoRoute(
+            path: '/chats',
+            builder: (context, __) {
+              // 데스크톱에서는 2-패널 레이아웃, 모바일/태블릿은 목록만 표시
+              if (Responsive.isDesktop(context)) {
+                return const DesktopChatLayout();
+              }
+              return const ChatListScreen();
+            },
+          ),
           GoRoute(
             path: '/chats/:roomId',
             builder: (_, state) {
